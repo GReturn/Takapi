@@ -15,6 +15,6 @@ class ReminderResponse(models.Model):
     status = models.CharField(max_length=150, null=False)
     date_responded = models.DateField(null=False)
     reminder = models.ForeignKey(Reminder, on_delete=models.CASCADE)
-
+    
     def __str__(self):
         return f"Response #{self.response_id}"
