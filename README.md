@@ -2,6 +2,8 @@
 
 Takapi is a savings app designed to help users manage their money with ease. Its name is a play on the Tagalog word pitaka (wallet), emphasizing its goal of becoming your trusted digital savings app.
 
+![readme/Takapi Project Header.png](https://github.com/GReturn/Takapi/blob/737f8ffc80b8920ab92af95d098f0187ff0f663e/readme/Takapi%20Project%20-%20Header.png)
+
 This is a Django-based web application. This README provides setup instructions for contributors.
 
 ---
