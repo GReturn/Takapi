@@ -1,0 +1,147 @@
+# Takapi
+
+Takapi is a savings app designed to help users manage their money with ease. Its name is a play on the Tagalog word pitaka (wallet), emphasizing its goal of becoming your trusted digital savings app.
+
+This is a Django-based web application. This README provides setup instructions for contributors.
+
+---
+
+## 📦 Requirements
+- Python 3.10+
+- Virtual environment (recommended: `venv`)
+- Database (MySQL)
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/GReturn/Takapi.git
+cd Takapi
+```
+
+### 2. Create Virtual Environment
+```bash
+python -m venv .venv
+```
+
+Activate it:
+- **Windows (PowerShell):**
+  ```bash
+  .venv\Scripts\Activate.ps1
+  ```
+- **macOS/Linux:**
+  ```bash
+  source .venv/bin/activate
+  ```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Environment Variables
+Copy the example environment file:
+```bash
+cp sample.env .env
+```
+
+Edit `.env` and update with your local secrets (e.g. database, secret key, debug mode).
+
+---
+
+## 🔑 Environment Variables
+
+Your `.env` file should look like this:
+```env
+SECRET_KEY=your-secret-key
+DEBUG=True
+DB_NAME=takapi
+DB_USER=your-username
+DB_PASSWORD=your-password
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+> ⚠️ Never commit `.env` — it contains sensitive information.
+
+---
+
+## 📂 Project Structure
+```
+takapi/
+│── manage.py
+│── .env              # local secrets (ignored in git)
+│── sample.env
+│── requirements.txt
+│── README.md
+│
+│── Takapi/           # main Django project
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   ├── wsgi.py
+│
+│── apps/             # all apps are stored here
+│   │── app1/
+│   │── app2/
+│   │── app3/
+│   │── app4/
+│   │── app5/
+│
+│── static/           # static assets (CSS, JS, images)
+│── templates/        # HTML templates
+```
+
+---
+
+## 🗄️ Database Setup
+
+1. Apply migrations:
+   ```bash
+   python manage.py migrate
+   ```
+2. Create a superuser:
+   ```bash
+   python manage.py createsuperuser
+   ```
+
+---
+
+## ▶️ Running the Server
+```bash
+python manage.py runserver
+```
+
+Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+## 🧪 Running Tests
+```bash
+python manage.py test
+```
+
+---
+
+## 🌍 Deployment Notes
+- Use a production-ready database (e.g. PostgreSQL).
+- Set `DEBUG=False` in `.env`.
+- Configure `ALLOWED_HOSTS` in `settings.py` using env vars.
+- Run:
+  ```bash
+  python manage.py collectstatic
+  ```
+
+---
+
+## 🤝 Contributing
+1. Create a feature branch:  
+   ```bash
+   git checkout -b feature/awesome-feature
+   ```
+2. Commit changes and push  
+3. Open a Pull Request
+
+---
