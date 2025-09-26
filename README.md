@@ -70,12 +70,7 @@ DB_PORT=5432
 
 ## 📂 Project Structure
 ```
-takapi/
-│── manage.py
-│── .env              # local secrets (ignored in git)
-│── sample.env
-│── requirements.txt
-│── README.md
+Takapi/
 │
 │── Takapi/           # main Django project
 │   ├── settings.py
@@ -91,7 +86,14 @@ takapi/
 │   │── app5/
 │
 │── static/           # static assets (CSS, JS, images)
+│
 │── templates/        # HTML templates
+│
+│── manage.py
+│── .env              # local secrets (ignored in git)
+│── sample.env
+│── requirements.txt
+│── README.md
 ```
 
 ---
