@@ -31,6 +31,10 @@ Activate it:
   ```bash
   .venv\Scripts\Activate.ps1
   ```
+- **Windows (Command Prompt)**
+  ```cmd
+  .venv\Scripts\activate.bat
+  ```
 - **macOS/Linux:**
   ```bash
   source .venv/bin/activate
