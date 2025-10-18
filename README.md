@@ -69,7 +69,7 @@ DB_PASSWORD=your-password
 DB_HOST=localhost
 DB_PORT=5432
 ```
-
+Generate your secret key [here](https://djecrety.ir/).
 > ⚠️ Never commit `.env` — it contains sensitive information.
 
 ---

@@ -21,6 +21,7 @@ class Saving(models.Model):
     goal = models.ForeignKey(SavingGoal, on_delete=models.CASCADE)
     amount = models.DecimalField(decimal_places=2, max_digits=12)
     date = models.DateField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.amount} saved on {self.date} for {self.goal}"
