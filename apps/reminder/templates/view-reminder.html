@@ -1,0 +1,275 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Takapi Reminders</title>
+  <style>
+    :root {
+      --primary-color: #1e90ff;
+      --secondary-color: #eaf4ff;
+      --card-bg: #ffffff;
+      --page-bg: #e6f0fa;
+      --text-color: #222;
+      --subtle-text: #666;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--page-bg);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .header-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .left {
+      justify-content: flex-start;
+    }
+
+    .center {
+      justify-content: center;
+    }
+
+    .right {
+      justify-content: flex-end;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #cce6ff;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: white;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    main {
+      flex: 1;
+      padding: 50px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .reminder-box {
+      background-color: var(--card-bg);
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 950px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--primary-color);
+    }
+
+    .reminder-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .reminder-item {
+      background-color: #fefefe;
+      border-left: 6px solid var(--primary-color);
+      padding: 18px 24px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .reminder-date {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .reminder-time {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--subtle-text);
+      margin-left: 20px;
+    }
+
+    .new-reminder {
+      display: flex;
+      justify-content: center;
+      margin-top: 35px;
+    }
+
+    .new-reminder-btn {
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 14px 26px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .new-reminder-btn:hover {
+      background-color: #157be0;
+    }
+
+    .new-reminder-btn span {
+      font-size: 22px;
+      margin-right: 10px;
+    }
+
+    footer {
+      background-color: var(--primary-color);
+      color: white;
+      text-align: center;
+      padding: 15px 10px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 700px) {
+      .reminder-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .reminder-time {
+        margin-left: 0;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .header-section {
+        justify-content: center !important;
+      }
+
+      .nav-links {
+        gap: 20px;
+      }
+
+      .reminder-box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% load static %}
+
+  <header>
+
+    <div class="header-section left">
+      <div class="logo-text">Takapi</div>
+    </div>
+
+
+    <div class="header-section center">
+      <nav class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+
+
+    <div class="header-section right">
+      <div class="profile-icon">
+        <img src="https://www.w3schools.com/howto/img_avatar.png" alt="Default User">
+      </div>
+    </div>
+  </header>
+
+
+  <main>
+    <div class="reminder-box">
+      <h1>Reminder List</h1>
+
+      <ul class="reminder-list">
+        <li class="reminder-item">
+          <div class="reminder-date">October 21, 2025</div>
+          <div class="reminder-time">08:00 AM</div>
+        </li>
+        <li class="reminder-item">
+          <div class="reminder-date">October 22, 2025</div>
+          <div class="reminder-time">02:30 PM</div>
+        </li>
+        <li class="reminder-item">
+          <div class="reminder-date">October 23, 2025</div>
+          <div class="reminder-time">06:45 PM</div>
+        </li>
+      </ul>
+
+      <div class="new-reminder">
+        <a href="#" class="new-reminder-btn">
+          <span>+</span> New Reminder
+        </a>
+      </div>
+    </div>
+  </main>
+
+
+  {% include "partials/footer.html" %}
+
+</body>
+</html>
