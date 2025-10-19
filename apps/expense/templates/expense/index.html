@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1976D2;
             min-height: 100vh;
             padding: 20px;
         }
@@ -53,7 +53,7 @@
         }
 
         .card h2 {
-            color: #667eea;
+            color: #1976D2;
             margin-bottom: 20px;
             font-size: 1.5em;
         }
@@ -66,7 +66,7 @@
         }
 
         .summary-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #7CB342;
             color: white;
             padding: 25px;
             border-radius: 15px;
@@ -102,7 +102,7 @@
         }
 
         th {
-            color: #667eea;
+            color: #1976D2;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.85em;
@@ -113,7 +113,7 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #7CB342;
             color: white;
             border: none;
             padding: 12px 24px;
@@ -128,7 +128,8 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(124, 179, 66, 0.4);
+            background: #689F38;
         }
 
         .btn-small {
@@ -137,11 +138,19 @@
         }
 
         .btn-edit {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #1976D2;
+        }
+
+        .btn-edit:hover {
+            background: #1565C0;
         }
 
         .btn-delete {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            background: #F57C00;
+        }
+
+        .btn-delete:hover {
+            background: #E65100;
         }
 
         .actions {
@@ -160,19 +169,21 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background: #f8f9fa;
+            background: #E8F5E9;
             border-radius: 8px;
             margin-bottom: 10px;
             transition: background 0.2s;
+            border-left: 4px solid #7CB342;
         }
 
         .category-item:hover {
-            background: #e9ecef;
+            background: #C8E6C9;
         }
 
         .category-item span {
             font-size: 1.1em;
             font-weight: 500;
+            color: #2E7D32;
         }
 
         .category-item div {
@@ -214,7 +225,7 @@
     <div class="container">
         <header>
             <h1>💰 Expense Tracker</h1>
-            <p>Track and manage your expenses efficiently</p>
+            <p>Track and manage your expenses efficiently with Takapi</p>
         </header>
         
         <div class="dashboard">

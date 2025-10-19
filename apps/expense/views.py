@@ -8,4 +8,3 @@ def index(request):
     Displays expense dashboard with summary and list of expenses.
     """
     return render(request, 'expense/index.html')
-    # return HttpResponse("<h1>Hello from Expense App!</h1>")
