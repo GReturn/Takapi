@@ -1,303 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expense Tracker - Takapi</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #F5F7FA;
-            min-height: 100vh;
-            padding: 0;
-        }
-
-        /* Navigation Bar */
-        .navbar {
-            background: white;
-            padding: 15px 40px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5em;
-            font-weight: 600;
-            color: #1565C0;
-            text-decoration: none;
-        }
-
-        .navbar-brand span {
-            font-size: 1.2em;
-        }
-
-        .navbar-menu {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .navbar-menu a {
-            color: #5F6368;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .navbar-menu a:hover {
-            color: #1565C0;
-        }
-
-        .btn-logout {
-            background: #1565C0;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #0D47A1;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        header {
-            margin-bottom: 40px;
-        }
-
-        header h1 {
-            color: #1565C0;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 1.1em;
-            color: #5F6368;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 25px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .card h2 {
-            color: #1565C0;
-            margin-bottom: 25px;
-            font-size: 1.3em;
-            font-weight: 600;
-        }
-
-        .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .summary-card {
-            background: white;
-            border: 2px solid #E8EAED;
-            color: #5F6368;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        .summary-card h3 {
-            font-size: 0.9em;
-            margin-bottom: 10px;
-            font-weight: 500;
-            color: #5F6368;
-        }
-
-        .summary-card .amount {
-            font-size: 2em;
-            font-weight: bold;
-            color: #1565C0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        thead {
-            background: #F5F7FA;
-            border-bottom: 2px solid #E8EAED;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-        }
-
-        th {
-            color: #5F6368;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            letter-spacing: 0.5px;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #E8EAED;
-        }
-
-        tbody tr:hover {
-            background: #F5F7FA;
-        }
-
-        td {
-            color: #202124;
-            font-size: 0.95em;
-        }
-
-        .btn {
-            background: #1565C0;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 500;
-            transition: background 0.3s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: #0D47A1;
-        }
-
-        .btn-small {
-            padding: 6px 14px;
-            font-size: 0.85em;
-        }
-
-        .btn-edit {
-            background: #1565C0;
-        }
-
-        .btn-edit:hover {
-            background: #0D47A1;
-        }
-
-        .btn-delete {
-            background: white;
-            color: #D32F2F;
-            border: 1px solid #D32F2F;
-        }
-
-        .btn-delete:hover {
-            background: #D32F2F;
-            color: white;
-        }
-
-        .actions {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .category-list {
-            list-style: none;
-        }
-
-        .category-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            background: #F5F7FA;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: background 0.2s;
-            border-left: 3px solid #7CB342;
-        }
-
-        .category-item:hover {
-            background: #E8EAED;
-        }
-
-        .category-item span {
-            font-size: 1em;
-            font-weight: 500;
-            color: #202124;
-        }
-
-        .category-item div {
-            display: flex;
-            gap: 8px;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            color: #5F6368;
-            font-style: italic;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 15px 20px;
-            }
-
-            .navbar-menu {
-                gap: 15px;
-            }
-
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-
-            .summary-cards {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 1.8em;
-            }
-
-            table {
-                font-size: 0.85em;
-            }
-
-            th, td {
-                padding: 10px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'expense/css/style.css' %}">
 </head>
 <body>
     <!-- Navigation Bar -->
@@ -394,28 +102,28 @@
                             <span>🍔 Food</span>
                             <div>
                                 <button class="btn btn-small btn-edit">Edit</button>
-                                <button class="btn btn-small btn-delete">Delete</button>
+                                <button class="btn btn-small btn-delete">Del</button>
                             </div>
                         </li>
                         <li class="category-item">
                             <span>🚗 Transportation</span>
                             <div>
                                 <button class="btn btn-small btn-edit">Edit</button>
-                                <button class="btn btn-small btn-delete">Delete</button>
+                                <button class="btn btn-small btn-delete">Del</button>
                             </div>
                         </li>
                         <li class="category-item">
                             <span>🎮 Entertainment</span>
                             <div>
                                 <button class="btn btn-small btn-edit">Edit</button>
-                                <button class="btn btn-small btn-delete">Delete</button>
+                                <button class="btn btn-small btn-delete">Del</button>
                             </div>
                         </li>
                         <li class="category-item">
                             <span>🏠 Bills</span>
                             <div>
                                 <button class="btn btn-small btn-edit">Edit</button>
-                                <button class="btn btn-small btn-delete">Delete</button>
+                                <button class="btn btn-small btn-delete">Del</button>
                             </div>
                         </li>
                     </ul>
