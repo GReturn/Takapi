@@ -20,6 +20,8 @@ from apps.expense import views as expense_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('', include('apps.user.urls')),
+    path('', include('apps.currency.urls')),
     #Include Expense app URLs
     path("expense/", include('apps.expense.urls')),
 ]
