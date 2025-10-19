@@ -203,7 +203,7 @@
   </style>
 </head>
 <body>
-
+  {% load static %}
 
   <header>
     <div class="header-section left">
@@ -253,9 +253,7 @@
   </main>
 
 
-  <footer>
-    &copy; 2025 Takapi. All rights reserved.
-  </footer>
+  {% include "partials/footer.html" %}
 
 </body>
 </html>
