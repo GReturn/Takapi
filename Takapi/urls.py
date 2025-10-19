@@ -23,4 +23,5 @@ urlpatterns = [
     path('', include('apps.currency.urls')),
     #Include Expense app URLs
     path("expense/", include('apps.expense.urls')),
+    path("budget/", include('apps.budget.urls'))
 ]

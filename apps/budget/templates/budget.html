@@ -1,0 +1,238 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Manager - Takapi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom colors from the Takapi logo */
+        .bg-takapi-blue-dark { background-color: #0D47A1; }
+        .text-takapi-blue-dark { color: #0D47A1; }
+        .border-takapi-blue-dark { border-color: #0D47A1; }
+        .hover\:bg-takapi-blue-darker:hover { background-color: #0b3c8a; }
+
+        .bg-takapi-green { background-color: #4CAF50; }
+        .text-takapi-green { color: #4CAF50; }
+
+        .bg-takapi-blue-light { background-color: #2196F3; }
+        .text-takapi-blue-light { color: #2196F3; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-2">
+                <!-- SVG Logo inspired by the image provided -->
+                <svg class="h-10 w-10" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="256" cy="256" r="256" fill="#E3F2FD"/>
+                    <path d="M160 200C160 186.745 170.745 176 184 176H328C341.255 176 352 186.745 352 200V320H160V200Z" fill="#0D47A1"/>
+                    <path d="M368 256C368 247.163 360.837 240 352 240H328V272H352C360.837 272 368 264.837 368 256Z" fill="#2196F3"/>
+                    <path d="M224 208L224 232C224 245.255 213.255 256 200 256H184V232C184 218.745 194.745 208 208 208H224Z" fill="#4CAF50"/>
+                    <path d="M204 121.28C220.7 108.56 242.4 106.08 260.6 115.6C278.8 125.12 289.4 144.16 288 164C272.48 162.26 257.54 165.94 245.48 174.24C234.4 181.82 226.74 193.38 224 206.08V206.08C218.414 180.117 210.873 151.728 204 121.28Z" fill="#4CAF50"/>
+                    <path d="M308 121.28C291.3 108.56 269.6 106.08 251.4 115.6C233.2 125.12 222.6 144.16 224 164C239.52 162.26 254.46 165.94 266.52 174.24C277.6 181.82 285.26 193.38 288 206.08V206.08C293.586 180.117 301.127 151.728 308 121.28Z" fill="#2196F3"/>
+                </svg>
+                <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" class="text-gray-600 hover:text-takapi-blue-dark">Features</a>
+                <a href="#about" class="text-gray-600 hover:text-takapi-blue-dark">About</a>
+                <a href="#contact" class="text-gray-600 hover:text-takapi-blue-dark">Contact</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="/login/" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log Out</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 py-8">
+
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-takapi-blue-dark mb-2">💼 Budget Manager</h1>
+            <p class="text-lg text-gray-600">Set and manage your budgets to stay on track with your financial goals.</p>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-dark">
+                <h3 class="text-gray-600 text-sm font-medium mb-2">Total Budget</h3>
+                <div class="text-3xl font-bold text-takapi-blue-dark">₱0.00</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-green">
+                <h3 class="text-gray-600 text-sm font-medium mb-2">Active Budgets</h3>
+                <div class="text-3xl font-bold text-takapi-green">0</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-light">
+                <h3 class="text-gray-600 text-sm font-medium mb-2">Budget Utilization</h3>
+                <div class="text-3xl font-bold text-takapi-blue-light">0%</div>
+            </div>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Budget List (Left Side - Takes 2 columns) -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <!-- Card Header -->
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-takapi-blue-dark">My Budgets</h2>
+                        <button class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
+                            + Create Budget
+                        </button>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Budget Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Period (Days)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Progress</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <!-- Sample Data -->
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Monthly Groceries</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">₱5,000.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                                <div class="bg-takapi-green h-2 rounded-full" style="width: 45%"></div>
+                                            </div>
+                                            <span class="text-gray-600">45%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <button class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit</button>
+                                        <button class="text-red-600 hover:text-red-700 font-medium">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Entertainment</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">₱2,000.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                                <div class="bg-takapi-green h-2 rounded-full" style="width: 60%"></div>
+                                            </div>
+                                            <span class="text-gray-600">60%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <button class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit</button>
+                                        <button class="text-red-600 hover:text-red-700 font-medium">Delete</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50 transition duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Transportation</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">₱3,500.00</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                                <div class="bg-red-500 h-2 rounded-full" style="width: 85%"></div>
+                                            </div>
+                                            <span class="text-gray-600">85%</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                        <button class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit</button>
+                                        <button class="text-red-600 hover:text-red-700 font-medium">Delete</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Tips Sidebar (Right Side) -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">💡 Budget Tips</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start space-x-3">
+                            <span class="text-takapi-green text-xl">✓</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Track Regularly</h3>
+                                <p class="text-sm text-gray-600">Review your budgets weekly to stay on target.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <span class="text-takapi-green text-xl">✓</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Be Realistic</h3>
+                                <p class="text-sm text-gray-600">Set achievable budget amounts based on your income.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <span class="text-takapi-green text-xl">✓</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Emergency Fund</h3>
+                                <p class="text-sm text-gray-600">Always include a buffer for unexpected expenses.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-3">
+                            <span class="text-takapi-green text-xl">✓</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">Adjust as Needed</h3>
+                                <p class="text-sm text-gray-600">Don't be afraid to modify budgets based on reality.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Quick Stats Card -->
+                <div class="bg-gradient-to-br from-takapi-blue-dark to-takapi-blue-light rounded-xl shadow-md p-6 text-white">
+                    <h2 class="text-xl font-semibold mb-4">📊 Quick Stats</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm opacity-90">Budgets Created</span>
+                            <span class="font-bold text-lg">3</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm opacity-90">On Track</span>
+                            <span class="font-bold text-lg">2</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm opacity-90">Over Budget</span>
+                            <span class="font-bold text-lg">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm opacity-90">Nearly Exceeded</span>
+                            <span class="font-bold text-lg">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    {% include "partials/footer.html" %}
+
+</body>
+</html>
