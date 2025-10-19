@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Takapi - Your Digital Wallet for Savings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom colors from the Takapi logo */
+        .bg-takapi-blue-dark { background-color: #0D47A1; }
+        .text-takapi-blue-dark { color: #0D47A1; }
+        .border-takapi-blue-dark { border-color: #0D47A1; }
+        .hover\:bg-takapi-blue-darker:hover { background-color: #0b3c8a; }
+
+        .bg-takapi-green { background-color: #4CAF50; }
+        .text-takapi-green { color: #4CAF50; }
+
+        .bg-takapi-blue-light { background-color: #2196F3; }
+        .text-takapi-blue-light { color: #2196F3; }
+
+        .swoop-bg {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23f9fafb' fill-opacity='1' d='M0,192L80,170.7C160,149,320,107,480,112C640,117,800,171,960,197.3C1120,224,1280,224,1360,224L1440,224L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: bottom;
+            background-size: cover;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-800">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="flex items-center space-x-2">
+                <!-- SVG Logo inspired by the image provided -->
+                <svg class="h-10 w-10" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="256" cy="256" r="256" fill="#E3F2FD"/>
+                    <path d="M160 200C160 186.745 170.745 176 184 176H328C341.255 176 352 186.745 352 200V320H160V200Z" fill="#0D47A1"/>
+                    <path d="M368 256C368 247.163 360.837 240 352 240H328V272H352C360.837 272 368 264.837 368 256Z" fill="#2196F3"/>
+                    <path d="M224 208L224 232C224 245.255 213.255 256 200 256H184V232C184 218.745 194.745 208 208 208H224Z" fill="#4CAF50"/>
+                    <path d="M204 121.28C220.7 108.56 242.4 106.08 260.6 115.6C278.8 125.12 289.4 144.16 288 164C272.48 162.26 257.54 165.94 245.48 174.24C234.4 181.82 226.74 193.38 224 206.08V206.08C218.414 180.117 210.873 151.728 204 121.28Z" fill="#4CAF50"/>
+                    <path d="M308 121.28C291.3 108.56 269.6 106.08 251.4 115.6C233.2 125.12 222.6 144.16 224 164C239.52 162.26 254.46 165.94 266.52 174.24C277.6 181.82 285.26 193.38 288 206.08V206.08C293.586 180.117 301.127 151.728 308 121.28Z" fill="#2196F3"/>
+                </svg>
+                <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" class="text-gray-600 hover:text-takapi-blue-dark">Features</a>
+                <a href="#about" class="text-gray-600 hover:text-takapi-blue-dark">About</a>
+                <a href="#contact" class="text-gray-600 hover:text-takapi-blue-dark">Contact</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="login.html" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
+                <a href="#" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
+            </div>
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="swoop-bg">
+        <div class="container mx-auto px-6 py-24 md:py-32 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-takapi-blue-dark leading-tight">Take Control of Your Savings.</h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The smart, simple way for students to manage money, track expenses, and reach their financial goals. Start your journey to financial freedom today.</p>
+            <div class="mt-8">
+                <a href="#" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300">Get Started for Free</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-takapi-blue-dark">Everything You Need to Save Smarter</h2>
+                <p class="text-gray-600 mt-2">Takapi helps you build healthy financial habits that last.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="bg-takapi-blue-light inline-block p-4 rounded-full">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mt-4">Smart Budgeting</h3>
+                    <p class="text-gray-500 mt-2">Create weekly or monthly budgets that fit your student lifestyle.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="bg-takapi-green inline-block p-4 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mt-4">Expense Tracking</h3>
+                    <p class="text-gray-500 mt-2">Easily categorize your spending to see exactly where your money goes.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="bg-takapi-blue-light inline-block p-4 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mt-4">Savings Goals</h3>
+                    <p class="text-gray-500 mt-2">Set, track, and crush your goals, from a new laptop to spring break.</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="bg-white p-8 rounded-xl shadow-md text-center">
+                    <div class="bg-takapi-green inline-block p-4 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mt-4">Helpful Reminders</h3>
+                    <p class="text-gray-500 mt-2">Get gentle nudges to stay on track and build consistent saving habits.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-takapi-blue-dark text-white">
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center">
+                <a href="#" class="text-2xl font-bold">Takapi</a>
+                <p class="mt-2 text-blue-100">Your Digital Wallet for Savings</p>
+                <div class="mt-6 flex justify-center space-x-6">
+                    <a href="#" class="hover:text-blue-200">Facebook</a>
+                    <a href="#" class="hover:text-blue-200">Twitter</a>
+                    <a href="#" class="hover:text-blue-200">Instagram</a>
+                </div>
+                <p class="mt-8 text-sm text-blue-200">&copy; 2025 Takapi. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
