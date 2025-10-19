@@ -1,5 +1,5 @@
 """
-    template/ directory stores HTML templates
+    templates/ directory stores HTML templates
     that Django uses to render dynamic pages.
 
     Ex:
