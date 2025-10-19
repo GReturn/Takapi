@@ -1,0 +1,15 @@
+{% extends 'savings/base.html' %}
+{% block title %}Add Goal{% endblock %}
+
+{% block content %}
+<h2>Add New Goal</h2>
+<form class="goal-form">
+    <label>Goal Name:</label>
+    <input type="text" placeholder="Enter goal name"><br>
+    <label>Target Amount:</label>
+    <input type="number" placeholder="Enter amount"><br>
+    <label>Target Date:</label>
+    <input type="date"><br>
+    <button type="submit">Add Goal</button>
+</form>
+{% endblock %}

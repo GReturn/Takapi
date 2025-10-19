@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Savings App{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'savings/style.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Savings Tracker</h1>
+        <nav>
+            <a href="{% url 'show_all_goals' %}">All Goals</a>
+            <a href="{% url 'add_goal' %}">Add Goal</a>
+            <a href="{% url 'add_saving' %}">Add Saving</a>
+            <a href="{% url 'saving_history' %}">History</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Savings App | Django Project</p>
+    </footer>
+</body>
+</html>

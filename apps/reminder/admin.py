@@ -4,4 +4,3 @@ from .models import Reminder
 
 # Register your models here.
 admin.site.register(Reminder)
-# admin.site.register(ReminderResponse)
