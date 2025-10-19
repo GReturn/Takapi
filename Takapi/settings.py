@@ -39,8 +39,6 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    "core",
-
     "apps.reminder",
     "apps.user",
     "apps.currency",
