@@ -1,9 +1,13 @@
 from django.db import models
 
-from apps.currency.models import Currency
+class Currency(models.Model):
+    currency_id = models.AutoField(primary_key=True)
+    currency_short_name = models.CharField(max_length=11)
+    currency_long_name = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.currency_short_name + " " + self.currency_long_name
 
-# Create your models here.
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
     email = models.EmailField()

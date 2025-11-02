@@ -1,6 +1,5 @@
 from django.db import models
 
-from apps.currency.models import Currency
 from apps.user.models import User
 
 

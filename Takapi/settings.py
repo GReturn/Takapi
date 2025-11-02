@@ -41,7 +41,6 @@ INSTALLED_APPS = [
 
     "apps.reminder",
     "apps.user",
-    "apps.currency",
     "apps.savings",
     "apps.expense",
     "apps.budget"
