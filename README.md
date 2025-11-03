@@ -1,4 +1,4 @@
-![readme/Takapi Project Header.png](https://github.com/GReturn/Takapi/blob/737f8ffc80b8920ab92af95d098f0187ff0f663e/readme/Takapi%20Project%20-%20Header.png)
+![readme/Takapi Project Header.png](readme/Takapi%20Project%20-%20Header.png)
 # Takapi
 
 
@@ -101,6 +101,10 @@ Takapi/
 │── requirements.txt
 │── README.md
 ```
+
+---
+## 📐 Entity-Relationship Diagram
+![Takapi ERD](readme/Takapi-ERD.png)
 
 ---
 
