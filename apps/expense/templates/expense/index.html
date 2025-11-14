@@ -174,18 +174,23 @@
           </div>
         </div>
 
-        <!-- Card 3: Last Expense -->
+        <!-- Card 3: Last Expense (MODIFIED STRUCTURE) -->
         <div
           class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-takapi-green"
         >
           <h3 class="text-gray-500 text-sm font-semibold uppercase mb-2">
-            Last Transaction
+            LAST TRANSACTION
           </h3>
+          <!-- Date goes first, small font -->
+          <div id="kpi-last-expense-date" class="text-sm text-gray-500 mb-1">
+            N/A
+          </div>
+          <!-- Payment goes second, large font -->
           <div
-            class="text-2xl font-extrabold text-takapi-green"
+            class="text-3xl font-extrabold text-takapi-green"
             id="kpi-last-expense"
           >
-            ₱ 0.00 (N/A)
+            ₱ 0.00
           </div>
         </div>
       </div>
@@ -808,12 +813,15 @@
         if (lastExpense) {
           const date = new Date(lastExpense.date);
           const dateStr = date.toLocaleDateString();
-          document.getElementById(
-            "kpi-last-expense"
-          ).textContent = `${formatCurrency(lastExpense.amount)} (${dateStr})`;
-        } else {
+
+          // --- UPDATED LAST TRANSACTION RENDERING ---
+          document.getElementById("kpi-last-expense-date").textContent =
+            dateStr;
           document.getElementById("kpi-last-expense").textContent =
-            "₱ 0.00 (N/A)";
+            formatCurrency(lastExpense.amount);
+        } else {
+          document.getElementById("kpi-last-expense-date").textContent = "N/A";
+          document.getElementById("kpi-last-expense").textContent = "₱ 0.00";
         }
       };
 
