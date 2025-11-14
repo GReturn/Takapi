@@ -2,10 +2,33 @@
 {% block title %}Add Savings{% endblock %}
 
 {% block content %}
-<h2>Add Savings</h2>
-<form class="goal-form">
-    <label>Amount:</label>
-    <input type="number" placeholder="Enter amount"><br>
-    <button type="submit">Add Savings</button>
-</form>
+<div class="px-6 py-8 max-w-md mx-auto">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Add Savings</h2>
+
+    <form class="bg-white shadow-md rounded-lg p-6 space-y-4">
+        <!-- Select goal -->
+        <div>
+            <label class="block text-gray-700 font-semibold mb-2">Select Goal:</label>
+            <select class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="" disabled selected>Select a goal</option>
+                <option value="vacation">Vacation</option>
+                <option value="new-phone">New Phone</option>
+                <option value="emergency-fund">Emergency Fund</option>
+            </select>
+        </div>
+
+        <!-- Enter amount -->
+        <div>
+            <label class="block text-gray-700 font-semibold mb-2">Amount:</label>
+            <input type="number" placeholder="Enter amount"
+                   class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit"
+                class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+            Add Savings
+        </button>
+    </form>
+</div>
 {% endblock %}
