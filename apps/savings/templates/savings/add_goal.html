@@ -1,15 +1,43 @@
 {% extends 'savings/base.html' %}
-{% block title %}Add Goal{% endblock %}
+{% block title %}Add Goal - Takapi{% endblock %}
 
 {% block content %}
-<h2>Add New Goal</h2>
-<form class="goal-form">
-    <label>Goal Name:</label>
-    <input type="text" placeholder="Enter goal name"><br>
-    <label>Target Amount:</label>
-    <input type="number" placeholder="Enter amount"><br>
-    <label>Target Date:</label>
-    <input type="date"><br>
-    <button type="submit">Add Goal</button>
-</form>
+<div class="max-w-lg mx-auto bg-white shadow-lg rounded-xl p-8 mt-6">
+  <h2 class="text-2xl font-semibold text-takapi-blue-dark mb-6 text-center">
+    Add New Saving Goal
+  </h2>
+
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+
+    <!-- Goal Name -->
+    <div>
+      <label for="goal_name" class="block text-gray-700 font-medium mb-1">Goal Name</label>
+      <input id="goal_name" name="goal_name" type="text" placeholder="Enter goal name"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-takapi-blue-light focus:outline-none" required>
+    </div>
+
+    <!-- Target Amount -->
+    <div>
+      <label for="target_amount" class="block text-gray-700 font-medium mb-1">Target Amount</label>
+      <input id="target_amount" name="target_amount" type="number" placeholder="Enter target amount"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-takapi-blue-light focus:outline-none" required>
+    </div>
+
+    <!-- Target Date -->
+    <div>
+      <label for="target_date" class="block text-gray-700 font-medium mb-1">Target Date</label>
+      <input id="target_date" name="target_date" type="date"
+        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-takapi-blue-light focus:outline-none" required>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="pt-4">
+      <button type="submit"
+        class="w-full bg-takapi-blue-dark text-white font-semibold py-2 rounded-lg hover:bg-takapi-blue-darker transition duration-200">
+        Add Goal
+      </button>
+    </div>
+  </form>
+</div>
 {% endblock %}
