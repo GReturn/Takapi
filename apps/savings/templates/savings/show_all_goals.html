@@ -1,0 +1,38 @@
+{% extends 'savings/base.html' %}
+{% block title %}All Saving Goals{% endblock %}
+
+{% block content %}
+<div class="px-6 py-8 max-w-3xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">My Saving Goals</h2>
+
+    <ul class="bg-white shadow-md rounded-lg divide-y divide-gray-200">
+        <!-- Example Goal 1 -->
+        <li class="p-5 hover:bg-gray-50">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-800 font-semibold text-lg">Vacation Fund</span>
+                <button class="bg-blue-600 text-white px-4 py-1 rounded-lg hover:bg-blue-700 transition">
+                    Add Savings
+                </button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                <div class="bg-green-500 h-3 rounded-full" style="width: 60%;"></div>
+            </div>
+            <p class="text-sm text-gray-600">₱6,000 of ₱10,000 saved (60%)</p>
+        </li>
+
+        <!-- Example Goal 2 -->
+        <li class="p-5 hover:bg-gray-50">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-gray-800 font-semibold text-lg">Emergency Fund</span>
+                <button class="bg-blue-600 text-white px-4 py-1 rounded-lg hover:bg-blue-700 transition">
+                    Add Savings
+                </button>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                <div class="bg-green-500 h-3 rounded-full" style="width: 40%;"></div>
+            </div>
+            <p class="text-sm text-gray-600">₱4,000 of ₱10,000 saved (40%)</p>
+        </li>
+    </ul>
+</div>
+{% endblock %}
