@@ -92,7 +92,7 @@
                     <!-- Card Header -->
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                         <h2 class="text-xl font-semibold text-takapi-blue-dark">My Budgets</h2>
-                        <button class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
+                        <button onclick="openCreateModal()" class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
                             + Create Budget
                         </button>
                     </div>
@@ -124,8 +124,8 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                        <button class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit</button>
-                                        <button class="text-red-600 hover:text-red-700 font-medium">Delete</button>
+                                        <button onclick="openEditModal()" class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit</button>
+                                        <button onclick="openDeleteModal()" class="text-red-600 hover:text-red-700 font-medium">Delete</button>
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-gray-50 transition duration-150">
@@ -205,23 +205,23 @@
                 </div>
 
                 <!-- Quick Stats Card -->
-                <div class="bg-gradient-to-br from-takapi-blue-dark to-takapi-blue-light rounded-xl shadow-md p-6 text-white">
+                <div class="bg-gradient-to-br from-takapi-blue-dark to-takapi-blue-light rounded-xl shadow-md p-6 text-takapi-blue-dark">
                     <h2 class="text-xl font-semibold mb-4">📊 Quick Stats</h2>
                     <div class="space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm opacity-90">Budgets Created</span>
+                            <span class="text-sm text-gray-600 opacity-90">Budgets Created</span>
                             <span class="font-bold text-lg">3</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm opacity-90">On Track</span>
+                            <span class="text-sm text-gray-600 opacity-90">On Track</span>
                             <span class="font-bold text-lg">2</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm opacity-90">Over Budget</span>
+                            <span class="text-sm text-gray-600 opacity-90">Over Budget</span>
                             <span class="font-bold text-lg">0</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm opacity-90">Nearly Exceeded</span>
+                            <span class="text-sm text-gray-600 opacity-90">Nearly Exceeded</span>
                             <span class="font-bold text-lg">1</span>
                         </div>
                     </div>
@@ -231,8 +231,116 @@
         </div>
     </div>
 
+
     <!-- Footer -->
     {% include "partials/footer.html" %}
 
+    <!-- Create Budget Modal -->
+    <div id="createBudgetModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-semibold text-takapi-blue-dark mb-4">Create New Budget</h3>
+                <form method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
+                        <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Amount (₱)</label>
+                        <input type="number" name="amount" step="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Period (Days)</label>
+                        <input type="number" name="period_days" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
+                            Create
+                        </button>
+                        <button type="button" onclick="closeCreateModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 transition duration-300">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Budget Modal -->
+    <div id="deleteBudgetModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-semibold text-takapi-blue-dark mb-4">Delete Budget</h3>
+                <p class="text-gray-700 mb-4">Are you sure you want to delete this budget? This action cannot be undone.</p>
+                <div class="flex space-x-3">
+                    <button class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition duration-300">
+                        Delete
+                    </button>
+                    <button type="button" onclick="closeDeleteModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 transition duration-300">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Budget Modal -->
+    <div id="editBudgetModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg font-semibold text-takapi-blue-dark mb-4">Edit Budget</h3>
+                <form method="POST" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
+                        <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Amount (₱)</label>
+                        <input type="number" name="amount" step="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Period (Days)</label>
+                        <input type="number" name="period_days" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                    </div>
+                    <div class="flex space-x-3 pt-4">
+                        <button type="submit" class="flex-1 bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
+                            Create
+                        </button>
+                        <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 transition duration-300">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openCreateModal() {
+            document.getElementById('createBudgetModal').classList.remove('hidden');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createBudgetModal').classList.add('hidden');
+        }
+
+        function openDeleteModal() {
+            document.getElementById('deleteBudgetModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteBudgetModal').classList.add('hidden');
+        }
+
+        function openEditModal() {
+            document.getElementById('editBudgetModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editBudgetModal').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
