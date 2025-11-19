@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Takapi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/takapi-logo-v2.ico' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom colors from the Takapi logo */
+        .bg-takapi-blue-dark { background-color: #0D47A1; }
+        .text-takapi-blue-dark { color: #0D47A1; }
+        .border-takapi-blue-dark { border-color: #0D47A1; }
+        .hover\:bg-takapi-blue-darker:hover { background-color: #0b3c8a; }
+        .focus\:ring-takapi-blue-light:focus {
+            --tw-ring-color: #2196F3;
+        }
+        .bg-takapi-green-light {
+            background-color: #E8F5E9;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-2xl shadow-xl flex w-full max-w-4xl overflow-hidden">
+
+            <!-- Left Panel -->
+            <div class="hidden md:flex flex-col items-center justify-center w-1/2 bg-takapi-blue-dark text-white p-12 text-center">
+                <a href="/" class="flex items-center space-x-2 mb-8">
+                    <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
+                    <span class="text-3xl font-bold">Takapi</span>
+                </a>
+                <h1 class="text-3xl font-bold mb-2">Start your Journey</h1>
+                <p class="text-blue-100">Join Takapi today to take control of your finances and reach your savings goals faster.</p>
+            </div>
+
+            <!-- Right Panel (Signup Form) -->
+            <div class="w-full md:w-1/2 p-8 md:p-12 lg:p-16">
+                <div class="text-center md:hidden mb-8">
+                    <a href="/" class="flex items-center justify-center space-x-2">
+                        <svg class="h-10 w-10 text-takapi-blue-dark" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="256" cy="256" r="256" fill="#E3F2FD"/><path d="M160 200C160 186.745 170.745 176 184 176H328C341.255 176 352 186.745 352 200V320H160V200Z" fill="#0D47A1"/><path d="M368 256C368 247.163 360.837 240 352 240H328V272H352C360.837 272 368 264.837 368 256Z" fill="#2196F3"/><path d="M224 208L224 232C224 245.255 213.255 256 200 256H184V232C184 218.745 194.745 208 208 208H224Z" fill="#4CAF50"/></svg>
+                        <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
+                    </a>
+                </div>
+
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
+                <p class="text-gray-500 mb-8">Fill in your details to get started.</p>
+
+                <!-- NOTE: Add action="{% url 'signup' %}" if using Django -->
+                <form action="#" method="POST">
+                    <!-- NOTE: Add {% csrf_token %} here if using Django -->
+
+                    <div class="mb-4">
+                        <label for="fullname" class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
+                        <input type="text" id="fullname" name="fullname"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-takapi-blue-light transition duration-200"
+                            placeholder="John Doe" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email Address</label>
+                        <input type="email" id="email" name="email"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-takapi-blue-light transition duration-200"
+                            placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="password" name="password"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-takapi-blue-light transition duration-200"
+                            placeholder="••••••••" required>
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="confirm_password" class="block text-gray-700 text-sm font-medium mb-2">Confirm Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-takapi-blue-light transition duration-200"
+                            placeholder="••••••••" required>
+                    </div>
+
+                    <div class="mb-6 flex items-center">
+                        <input type="checkbox" id="terms" name="terms" class="h-4 w-4 text-takapi-blue-dark focus:ring-takapi-blue-light border-gray-300 rounded" required>
+                        <label for="terms" class="ml-2 block text-sm text-gray-600">
+                            I agree to the <a href="{% url 'terms' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Terms of Service</a> and <a href="{% url 'privacy' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <div>
+                        <button type="submit"
+                            class="w-full bg-takapi-blue-dark text-white font-bold py-3 px-4 rounded-lg hover:bg-takapi-blue-darker transition duration-300 shadow-md hover:shadow-lg">
+                            Create Account
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Log In Link -->
+                <p class="text-center text-gray-600 mt-8">
+                    Already have an account?
+                    <a href="{% url 'login' %}" class="font-medium text-takapi-blue-dark hover:underline">Log in</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

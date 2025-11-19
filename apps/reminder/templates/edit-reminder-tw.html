@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Reminder - TAKAPI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/takapi-logo-v2.ico' %}">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -103,15 +104,7 @@
     <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <a href="/" class="flex items-center space-x-2">
-                <!-- SVG Logo inspired by the image provided -->
-                <svg class="h-10 w-10" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="256" cy="256" r="256" fill="#E3F2FD"/>
-                    <path d="M160 200C160 186.745 170.745 176 184 176H328C341.255 176 352 186.745 352 200V320H160V200Z" fill="#0D47A1"/>
-                    <path d="M368 256C368 247.163 360.837 240 352 240H328V272H352C360.837 272 368 264.837 368 256Z" fill="#2196F3"/>
-                    <path d="M224 208L224 232C224 245.255 213.255 256 200 256H184V232C184 218.745 194.745 208 208 208H224Z" fill="#4CAF50"/>
-                    <path d="M204 121.28C220.7 108.56 242.4 106.08 260.6 115.6C278.8 125.12 289.4 144.16 288 164C272.48 162.26 257.54 165.94 245.48 174.24C234.4 181.82 226.74 193.38 224 206.08V206.08C218.414 180.117 210.873 151.728 204 121.28Z" fill="#4CAF50"/>
-                    <path d="M308 121.28C291.3 108.56 269.6 106.08 251.4 115.6C233.2 125.12 222.6 144.16 224 164C239.52 162.26 254.46 165.94 266.52 174.24C277.6 181.82 285.26 193.38 288 206.08V206.08C293.586 180.117 301.127 151.728 308 121.28Z" fill="#2196F3"/>
-                </svg>
+                <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
                 <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
             </a>
             <div class="hidden md:flex items-center space-x-8">
