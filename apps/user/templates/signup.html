@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Takapi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/takapi-logo-v2.ico' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <style>
         body {
@@ -86,7 +87,7 @@
                     <div class="mb-6 flex items-center">
                         <input type="checkbox" id="terms" name="terms" class="h-4 w-4 text-takapi-blue-dark focus:ring-takapi-blue-light border-gray-300 rounded" required>
                         <label for="terms" class="ml-2 block text-sm text-gray-600">
-                            I agree to the <a href="{% url 'terms' %}" class="text-takapi-blue-dark hover:underline">Terms of Service</a> and <a href="{% url 'privacy' %}" class="text-takapi-blue-dark hover:underline">Privacy Policy</a>
+                            I agree to the <a href="{% url 'terms' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Terms of Service</a> and <a href="{% url 'privacy' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Privacy Policy</a>
                         </label>
                     </div>
 
