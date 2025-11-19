@@ -12,6 +12,21 @@ class IndexView(View):
     def get(self, request):
         return render(request, self.template_name)
 
+
+class PrivacyView(View):
+    template_name = 'privacy.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
+class TermsView(View):
+    template_name = 'terms.html'
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+
 class LoginView(View):
     template_name = 'login.html'
     def get(self, request):
@@ -50,8 +65,11 @@ class LoginView(View):
         # 4. Redirect to the profile page
         return redirect('profile')
 
+class SignupView(View):
+    template_name = 'signup.html'
+    def get(self, request):
+        return render(request, self.template_name)
 
-# We removed LoginRequiredMixin
 class ProfileView(TemplateView):
     # Make sure this template name matches your file name!
     # You had 'user-profile.html' in your code, but 'profile.html' in our other conversation
