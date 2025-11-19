@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,13 +32,7 @@
             <!-- Left Panel -->
             <div class="hidden md:flex flex-col items-center justify-center w-1/2 bg-takapi-blue-dark text-white p-12 text-center">
                 <a href="/" class="flex items-center space-x-2 mb-8">
-                    <!-- SVG Logo (White version) -->
-                    <svg class="h-12 w-12" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="256" cy="256" r="256" fill="white" fill-opacity="0.1"/>
-                        <path d="M160 200C160 186.745 170.745 176 184 176H328C341.255 176 352 186.745 352 200V320H160V200Z" fill="white"/>
-                        <path d="M368 256C368 247.163 360.837 240 352 240H328V272H352C360.837 272 368 264.837 368 256Z" fill="#2196F3"/>
-                        <path d="M224 208L224 232C224 245.255 213.255 256 200 256H184V232C184 218.745 194.745 208 208 208H224Z" fill="#4CAF50"/>
-                    </svg>
+                    <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
                     <span class="text-3xl font-bold">Takapi</span>
                 </a>
                 <h1 class="text-3xl font-bold mb-2">Welcome Back!</h1>
