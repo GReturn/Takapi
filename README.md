@@ -172,7 +172,7 @@ erDiagram
     USER ||--|{ SAVING : has
     USER }o--|| CURRENCY : sets
     
-    SAVING_GOAL ||--o{ SAVING : "belongs to
+    SAVING_GOAL ||--o{ SAVING : "belongs to"
     EXPENSE_CATEGORY ||--|{ EXPENSE : "belongs to"
 ```
 
