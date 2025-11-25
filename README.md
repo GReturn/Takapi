@@ -106,6 +106,76 @@ Takapi/
 ## 📐 Entity-Relationship Diagram
 ![Takapi ERD](readme/Takapi-ERD.png)
 
+### Interactive ERD
+```mermaid
+erDiagram
+    USER {
+        int userid PK
+        string email
+        string password
+        string fname
+        string lname
+        string gender
+        int age
+    }
+
+    BUDGET {
+        int budgetid PK
+        decimal amount
+        string name
+        string budget_period
+    }
+
+    REMINDER {
+        int reminderid PK
+        string message
+        datetime datetime
+        string status
+        date dateresponded
+    }
+
+    CURRENCY {
+        int currencyid PK
+        string shortname
+        string longname
+    }
+
+    SAVING_GOAL {
+        int savinggoalid PK
+        string name
+        decimal targetamount
+        date targetdate
+    }
+
+    SAVING {
+        int savingid PK
+        decimal amount
+        date date
+    }
+
+    EXPENSE {
+        int expenseid PK
+        decimal amount
+    }
+
+    EXPENSE_CATEGORY {
+        int categoryid PK
+        string name
+    }
+
+    %% Relationships
+    USER ||--|{ BUDGET : has
+    USER ||--o{ REMINDER : sets
+    USER ||--o{ EXPENSE : has
+    USER ||--|{ EXPENSE_CATEGORY : has
+    USER ||--|{ SAVING_GOAL : "belongs to"
+    USER ||--|{ SAVING : has
+    USER }o--|| CURRENCY : sets
+    
+    SAVING_GOAL ||--o{ SAVING : "belongs to
+    EXPENSE_CATEGORY ||--|{ EXPENSE : "belongs to"
+```
+
 ---
 
 ## 🗄️ Database Setup
