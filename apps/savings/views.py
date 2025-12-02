@@ -1,13 +1,10 @@
 from django.db.models import Sum
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 
-from apps import user
 from apps.savings.models import SavingGoal, Saving
+from apps.user.models import User
 
-
-def index(request):
-    return render(request, 'savings/index.html')
 
 def add_goal(request):
     # handle functionalities here for adding goal
@@ -27,12 +24,12 @@ class SavingsIndexView(View):
 
     def get(self, request):
         user_id = request.session.get('user_id')
-        # ... fetch user object ...
+        if not user_id:
+            return redirect('user:login')
 
-        # 1. Fetch Goals
+        user = User.objects.get(user_id=user_id)
         goals_query = SavingGoal.objects.filter(user=user)
 
-        # 2. Calculate Progress for each goal (Context for Template)
         goals_data = []
         for goal in goals_query:
             current = Saving.objects.filter(goal=goal).aggregate(Sum('amount'))['amount__sum'] or 0
@@ -47,10 +44,8 @@ class SavingsIndexView(View):
                 'percent': percent
             })
 
-        # 3. Fetch Recent History (Last 10 items)
         recent_savings = Saving.objects.filter(user=user).select_related('goal').order_by('-date', '-saving_id')[:10]
 
-        # 4. Total Saved
         total_saved = Saving.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
 
         context = {
