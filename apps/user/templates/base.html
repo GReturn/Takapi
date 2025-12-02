@@ -37,19 +37,24 @@
                 Overview
             </a>
 
-            <a href="{% url 'expense:index' %}"
-               class="sidebar-link {% if 'expense' in request.resolver_match.namespaces %}active{% endif %} flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">
-                Expenses
-            </a>
-
             <a href="{% url 'savings:index' %}"
                class="sidebar-link {% if 'savings' in request.resolver_match.namespaces %}active{% endif %} flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">
                 Savings & Goals
             </a>
 
+            <a href="{% url 'expense:index' %}"
+               class="sidebar-link {% if 'expense' in request.resolver_match.namespaces %}active{% endif %} flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">
+                Expenses
+            </a>
+
             <a href="{% url 'budget:index' %}"
                class="sidebar-link {% if 'budget' in request.resolver_match.namespaces %}active{% endif %} flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">
                 Budgets
+            </a>
+
+            <a href="{% url 'reminder:index' %}"
+               class="sidebar-link {% if 'reminder' in request.resolver_match.namespaces %}active{% endif %} flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 transition-colors">
+                Reminder
             </a>
         </nav>
 
