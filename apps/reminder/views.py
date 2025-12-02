@@ -6,13 +6,19 @@ from apps.user.models import User
 
 
 class ReminderIndexView(View):
-    def get(self, request):
-        # Fetch reminders for the logged-in user
-        # user_id = request.session.get('user_id')
-        user = User.objects.get(user_id=request.session['user_id'])
-        reminders = Reminder.objects.filter(user_id=user.user_id).order_by('date_time')
+    template_name = 'reminder/index.html'
 
-        return render(request, 'index.html', {'reminders': reminders})
+    def get(self, request):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('user:login')
+
+        user = User.objects.get(user_id=user_id)
+        reminders = Reminder.objects.filter(user=user)
+
+        context = {'user': user, 'reminders': reminders}
+
+        return render(request, 'index.html', context)
 
 
 class CreateReminderView(View):
