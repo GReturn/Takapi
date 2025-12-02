@@ -1,11 +1,26 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.views import View
+
 from .models import Budget
-# Create your views here.
+from ..user.models import User
 
-def index(request):
 
-    return render(request, 'budget.html')
+class BudgetView(View):
+    template_name = 'budget.html'
+
+    def get(self, request):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('user:login')
+
+        user = User.objects.get(user_id=user_id)
+        budgets = Budget.objects.filter(user=user)
+
+        context = {'budgets': budgets, 'user': user}
+
+        return render(request, self.template_name, context)
+
 
 @login_required
 def create_budget(request):
