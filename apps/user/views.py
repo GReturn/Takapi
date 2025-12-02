@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth.hashers import check_password, make_password
+from django.db.models import Sum
+from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Sum
+from django.contrib import messages
 
 from apps.user.models import Currency, User
 from apps.budget.models import Budget
@@ -32,180 +33,245 @@ class TermsView(View):
         return render(request, self.template_name)
 
 
+class LogoutView(View):
+    def get(self, request):
+        request.session.flush()
+        return redirect(reverse('login'))
+
+
 class LoginView(View):
     template_name = 'login.html'
+
     def get(self, request):
+        if 'user_id' in request.session:
+            return redirect('dashboard')
         return render(request, self.template_name)
 
     def post(self, request):
-        # --- THIS IS THE "ARBITRARY" LOGIN ---
-        # It finds the first User in your database and logs them in
-        # This is for development only!
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-        # 1. Get the first user from your custom User table
-        user = User.objects.first()
+        try:
+            user = User.objects.get(email=email)
 
-        # 2. If no users exist, create one to log in with
-        if not user:
-            # Assuming you have at least one currency in your DB
-            default_currency = Currency.objects.first()
-            if not default_currency:
-                default_currency = Currency.objects.create(
-                    currency_short_name="USD",
-                    currency_long_name="US Dollar"
-                )
+            if check_password(password, user.password):
+                request.session['user_id'] = user.user_id
+                request.session.set_expiry(0)
+                return redirect('dashboard')
 
-            user = User.objects.create(
-                email="dev@example.com",
-                first_name="Dev",
-                last_name="User",
-                gender="N/A",
-                age=25,
-                currency=default_currency
-            )
+        except User.DoesNotExist:
+            user = None
 
-        # 3. Store the user's ID in the session. This is how we "log them in".
-        request.session['user_id'] = user.user_id
+        return render(request, self.template_name, {'msg': 'Incorrect Email or Password'})
 
-        # 4. Redirect to the profile page
-        return redirect('dashboard')
 
 class SignupView(View):
     template_name = 'signup.html'
+
     def get(self, request):
-        return render(request, self.template_name)
+        currencies = Currency.objects.all()
+        return render(request, self.template_name, {'currencies': currencies})
+
+    def post(self, request):
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        age = request.POST.get('age')
+        gender = request.POST.get('gender')
+        currency_id = request.POST.get('currency_id')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        currencies = Currency.objects.all()
+
+        if password != confirm_password:
+            return render(request, self.template_name, {
+                'msg': 'Passwords do not match',
+                'currencies': currencies
+            })
+
+        if User.objects.filter(email=email).exists():
+            return render(request, self.template_name, {
+                'msg': 'Email already registered',
+                'currencies': currencies
+            })
+
+        try:
+            currency_instance = Currency.objects.get(currency_id=currency_id)
+
+            user = User(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                age=age,
+                gender=gender,
+                currency=currency_instance,
+                password=make_password(password)
+            )
+            user.save()
+            return redirect('login')
+
+        except Currency.DoesNotExist:
+            return render(request, self.template_name, {
+                'msg': 'Invalid Currency Selected',
+                'currencies': currencies
+            })
+
+        except Exception as e:
+            return render(request, self.template_name, {
+                'msg': f'Error creating user: {str(e)}',
+                'currencies': currencies
+            })
+
 
 class ProfileView(TemplateView):
-    # Make sure this template name matches your file name!
-    # You had 'user-profile.html' in your code, but 'profile.html' in our other conversation
     template_name = 'user-profile.html'
 
-    # We add a 'dispatch' method to manually check for our login session
     def dispatch(self, request, *args, **kwargs):
-        # If 'user_id' is NOT in the session, redirect to the login page
         if 'user_id' not in request.session:
             return redirect('login')
-
-        # If it IS in the session, continue to the 'get' method
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # 1. Get the user_id we stored in the session
         user_id = self.request.session.get('user_id')
 
-        # 2. Fetch the correct user from your custom User model
         try:
             current_user = User.objects.get(user_id=user_id)
+            context['user'] = current_user
+            context['currencies'] = Currency.objects.all()
         except User.DoesNotExist:
-            # If user was deleted, log them out and send to login
-            # del request.session['user_id']
-            return redirect('login')
-
-        # 3. Pass the correct user object to the template
-        context['user'] = current_user
-        context['currencies'] = Currency.objects.all()
+            pass # If user ID is invalid, flush session in the next step (logic handled in dispatch usually)
 
         return context
 
+    def post(self, request, *args, **kwargs):
+        user_id = request.session.get('user_id')
 
-class DashboardView(TemplateView):
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            return redirect('login')
+
+        action = request.POST.get('action')
+
+        if action == 'update_info':
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.email = request.POST.get('email')
+            user.save()
+            messages.success(request, 'Info updated successfully.')
+
+        elif action == 'update_preferences':
+            user.age = request.POST.get('age')
+            user.gender = request.POST.get('gender')
+
+            currency_id = request.POST.get('currency')
+            if currency_id:
+                try:
+                    user.currency = Currency.objects.get(pk=currency_id)
+                except Currency.DoesNotExist:
+                    messages.error(request, 'Invalid currency selected.')
+
+            user.save()
+            messages.success(request, 'Preferences updated successfully.')
+
+        elif action == 'change_password':
+            current_password = request.POST.get('password')
+            new_password = request.POST.get('new_password1')
+            new_password_confirmation = request.POST.get('new_password2')
+
+            if not check_password(current_password, user.password):
+                messages.error(request, 'Incorrect current password.')
+            elif new_password != new_password_confirmation:
+                messages.error(request, 'Passwords do not match.')
+            else:
+                user.password = make_password(new_password)
+                user.save()
+                messages.success(request, 'Password updated successfully.')
+
+        elif action == 'delete_account':
+            user.delete()
+            request.session.flush()
+            messages.success(request, 'Account deleted successfully.')
+            return redirect('login')
+
+        return redirect('profile')
+
+
+
+class DashboardView(View):
     template_name = 'dashboard.html'
 
-    # 1. Protect the view: Check if user is "logged in" via session
-    def dispatch(self, request, *args, **kwargs):
-        if 'user_id' not in request.session:
+    def get(self, request):
+        # 1. Security: Ensure user is logged in via your custom session
+        user_id = request.session.get('user_id')
+        if not user_id:
             return redirect('login')
-        return super().dispatch(request, *args, **kwargs)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            return redirect('login')
 
-        # --- DUMMY DATA (No Database Needed) ---
+        # --- CALCULATIONS ---
 
-        # We create a simple dictionary to mimic the User model
-        dummy_user = {
-            'fname': 'Dev',
-            'lname': 'User',
-            'email': 'dev@example.com',
+        # A. Total Savings (Sum of all Saving records)
+        total_savings = Saving.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
+
+        # B. Monthly Budget vs Expenses
+        # Note: Summing all budgets. You might want to filter by period in the future.
+        total_budget = Budget.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
+        total_expenses = Expense.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
+
+        # Calculate Remaining Budget
+        remaining_budget = total_budget - total_expenses
+        # Calculate Percentage for the progress bar (avoid division by zero)
+        budget_percent = (total_expenses / total_budget * 100) if total_budget > 0 else 0
+
+        # C. Pending Reminders Count
+        pending_reminders_count = Reminder.objects.filter(user=user, status=False).count()
+
+        # --- LISTS & COMPLEX DATA ---
+
+        # D. Active Saving Goals (Need to calculate progress for each)
+        goals = SavingGoal.objects.filter(user=user)
+        goals_data = []
+        for goal in goals:
+            # How much saved for THIS specific goal?
+            saved_amount = Saving.objects.filter(user=user, goal=goal).aggregate(Sum('amount'))['amount__sum'] or 0
+
+            # Percentage
+            percent = (saved_amount / goal.target_amount * 100) if goal.target_amount > 0 else 0
+
+            goals_data.append({
+                'name': goal.name,
+                'current': saved_amount,
+                'target': goal.target_amount,
+                'percent': min(percent, 100),  # Cap at 100% for CSS width
+                'target_date': goal.target_date
+            })
+
+        # E. Recent Expenses (Last 5)
+        # Note: Your Expense model doesn't have a 'date' field in the snippet you sent.
+        # I am ordering by ID (newest created) as a fallback.
+        recent_expenses = Expense.objects.filter(user=user).select_related('category').order_by('-expense_id')[:5]
+
+        # F. Reminders List (Next 3 pending)
+        upcoming_reminders = Reminder.objects.filter(user=user, status=False).order_by('date_time')[:3]
+
+        context = {
+            'user': user,
+            'currency': user.currency,  # Access currency via Foreign Key
+            'total_savings': total_savings,
+            'total_budget': total_budget,
+            'total_expenses': total_expenses,
+            'remaining_budget': remaining_budget,
+            'budget_percent': budget_percent,
+            'pending_count': pending_reminders_count,
+            'goals_data': goals_data,
+            'recent_expenses': recent_expenses,
+            'upcoming_reminders': upcoming_reminders,
         }
 
-        # We create a simple dictionary to mimic the Currency model
-        dummy_currency = {
-            'shortname': 'USD',
-            'longname': 'US Dollar',
-        }
-
-        # Pass these to the template
-        context['user'] = dummy_user
-        context['currency'] = dummy_currency
-        context['active_page'] = 'dashboard'
-
-        return context
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #
-    #     # 2. Get the current user
-    #     user_id = self.request.session.get('user_id')
-    #     try:
-    #         current_user = User.objects.get(user_id=user_id)
-    #     except User.DoesNotExist:
-    #         return redirect('login')
-    #
-    #     # 3. Currency Data
-    #     # Accessing the currency object related to the user
-    #     user_currency = current_user.currency
-    #     currency_symbol = user_currency.currency_short_name if user_currency else "PHP"
-    #
-    #     # 4. DATA ANALYTICS / AGGREGATIONS
-    #
-    #     # A. Total Savings (Sum of all Saving records for this user)
-    #     # We use 'aggregate' to sum the 'amount' column
-    #     savings_data = Saving.objects.filter(user=current_user).aggregate(Sum('amount'))
-    #     total_savings = savings_data['amount__sum'] or 0
-    #
-    #     # B. Total Expenses (Sum of all Expense records)
-    #     expense_data = Expense.objects.filter(user=current_user).aggregate(Sum('amount'))
-    #     total_expenses = expense_data['amount__sum'] or 0
-    #
-    #     # C. Budget Calculations
-    #     # Get the most recent budget created by the user
-    #     current_budget = Budget.objects.filter(user=current_user).last()
-    #     budget_limit = current_budget.amount if current_budget else 0
-    #
-    #     # Simple math for the dashboard
-    #     remaining_budget = budget_limit - total_expenses
-    #     budget_percentage = 0
-    #     if budget_limit > 0:
-    #         budget_percentage = (total_expenses / budget_limit) * 100
-    #
-    #     # 5. Fetch Lists for the UI
-    #
-    #     # Get 5 most recent expenses, joining with 'category' to get the name
-    #     # Note: Ensure your Expense model has a ForeignKey to 'category' with related_name or correct naming
-    #     recent_expenses = Expense.objects.filter(user=current_user).select_related('category').order_by('-date')[:5]
-    #
-    #     # Get all saving goals
-    #     saving_goals = SavingGoal.objects.filter(user=current_user)
-    #
-    #     # Get unread reminders
-    #     reminders = Reminder.objects.filter(user=current_user, status='unread')
-    #
-    #     # 6. Pass everything to the template
-    #     context.update({
-    #         'user': current_user,
-    #         'currency': user_currency,
-    #         'currency_symbol': currency_symbol,
-    #         'total_savings': total_savings,
-    #         'total_expenses': total_expenses,
-    #         'current_budget': current_budget,
-    #         'remaining_budget': remaining_budget,
-    #         'budget_percentage': budget_percentage,
-    #         'recent_expenses': recent_expenses,
-    #         'saving_goals': saving_goals,
-    #         'reminders': reminders,
-    #     })
-    #
-    #     return context
+        return render(request, self.template_name, context)
