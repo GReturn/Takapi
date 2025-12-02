@@ -4,6 +4,5 @@ from . import views
 app_name = 'expense'
 
 urlpatterns = [
-    # Main expense page at /expense/
-    path('', views.index, name='index'),
+    path('', views.ExpenseView.as_view(), name='index'),
 ]
