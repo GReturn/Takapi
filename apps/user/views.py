@@ -14,9 +14,8 @@ from apps.savings.models import Saving, SavingGoal
 from apps.reminder.models import Reminder
 
 
-@method_decorator(never_cache, name='dispatch')
 class IndexView(View):
-    template_name = 'index.html'
+    template_name = 'home.html'
 
     def get(self, request):
         return render(request, self.template_name)

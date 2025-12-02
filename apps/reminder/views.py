@@ -9,7 +9,7 @@ from apps.user.models import User
 
 @method_decorator(never_cache, name='dispatch')
 class ReminderIndexView(View):
-    template_name = 'reminder/index.html'
+    template_name = 'index.html'
 
     def get(self, request):
         user_id = request.session.get('user_id')
@@ -21,7 +21,7 @@ class ReminderIndexView(View):
 
         context = {'user': user, 'reminders': reminders}
 
-        return render(request, 'index.html', context)
+        return render(request, self.template_name, context)
 
 
 class CreateReminderView(View):
