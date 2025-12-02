@@ -2,7 +2,6 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Sum
 from django.shortcuts import render, redirect, reverse
 from django.views import View
-from django.views.generic import TemplateView
 from django.contrib import messages
 
 from apps.user.models import Currency, User
@@ -36,7 +35,7 @@ class TermsView(View):
 class LogoutView(View):
     def get(self, request):
         request.session.flush()
-        return redirect(reverse('login'))
+        return redirect(reverse('user:login'))
 
 
 class LoginView(View):
@@ -44,7 +43,7 @@ class LoginView(View):
 
     def get(self, request):
         if 'user_id' in request.session:
-            return redirect('dashboard')
+            return redirect('user:dashboard')
         return render(request, self.template_name)
 
     def post(self, request):
@@ -57,7 +56,7 @@ class LoginView(View):
             if check_password(password, user.password):
                 request.session['user_id'] = user.user_id
                 request.session.set_expiry(0)
-                return redirect('dashboard')
+                return redirect('user:dashboard')
 
         except User.DoesNotExist:
             user = None
@@ -109,7 +108,7 @@ class SignupView(View):
                 password=make_password(password)
             )
             user.save()
-            return redirect('login')
+            return redirect('user:login')
 
         except Currency.DoesNotExist:
             return render(request, self.template_name, {
@@ -124,12 +123,12 @@ class SignupView(View):
             })
 
 
-class ProfileView(TemplateView):
+class ProfileView(View):
     template_name = 'user-profile.html'
 
     def dispatch(self, request, *args, **kwargs):
         if 'user_id' not in request.session:
-            return redirect('login')
+            return redirect('user:login')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -151,7 +150,7 @@ class ProfileView(TemplateView):
         try:
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
-            return redirect('login')
+            return redirect('user:login')
 
         action = request.POST.get('action')
 
@@ -196,8 +195,7 @@ class ProfileView(TemplateView):
             messages.success(request, 'Account deleted successfully.')
             return redirect('login')
 
-        return redirect('profile')
-
+        return redirect('user:profile')
 
 
 class DashboardView(View):
@@ -207,12 +205,12 @@ class DashboardView(View):
         # 1. Security: Ensure user is logged in via your custom session
         user_id = request.session.get('user_id')
         if not user_id:
-            return redirect('login')
+            return redirect('user:login')
 
         try:
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
-            return redirect('login')
+            return redirect('user:login')
 
         # --- CALCULATIONS ---
 
