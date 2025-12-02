@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.views.generic import TemplateView
+from django.contrib import messages
 
 from apps.user.models import Currency, User
 from apps.budget.models import Budget
@@ -35,7 +36,7 @@ class TermsView(View):
 class LogoutView(View):
     def get(self, request):
         request.session.flush()
-        return redirect(reverse('user:login'))
+        return redirect(reverse('login'))
 
 
 class LoginView(View):
@@ -126,34 +127,77 @@ class SignupView(View):
 class ProfileView(TemplateView):
     template_name = 'user-profile.html'
 
-    # We add a 'dispatch' method to manually check for our login session
     def dispatch(self, request, *args, **kwargs):
-        # If 'user_id' is NOT in the session, redirect to the login page
         if 'user_id' not in request.session:
             return redirect('login')
-
-        # If it IS in the session, continue to the 'get' method
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # 1. Get the user_id we stored in the session
         user_id = self.request.session.get('user_id')
 
-        # 2. Fetch the correct user from your custom User model
         try:
             current_user = User.objects.get(user_id=user_id)
+            context['user'] = current_user
+            context['currencies'] = Currency.objects.all()
         except User.DoesNotExist:
-            # If user was deleted, log them out and send to login
-            # del request.session['user_id']
-            return redirect('login')
-
-        # 3. Pass the correct user object to the template
-        context['user'] = current_user
-        context['currencies'] = Currency.objects.all()
+            pass # If user ID is invalid, flush session in the next step (logic handled in dispatch usually)
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.session.get('user_id')
+
+        try:
+            user = User.objects.get(user_id=user_id)
+        except User.DoesNotExist:
+            return redirect('login')
+
+        action = request.POST.get('action')
+
+        if action == 'update_info':
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.email = request.POST.get('email')
+            user.save()
+            messages.success(request, 'Info updated successfully.')
+
+        elif action == 'update_preferences':
+            user.age = request.POST.get('age')
+            user.gender = request.POST.get('gender')
+
+            currency_id = request.POST.get('currency')
+            if currency_id:
+                try:
+                    user.currency = Currency.objects.get(pk=currency_id)
+                except Currency.DoesNotExist:
+                    messages.error(request, 'Invalid currency selected.')
+
+            user.save()
+            messages.success(request, 'Preferences updated successfully.')
+
+        elif action == 'change_password':
+            current_password = request.POST.get('password')
+            new_password = request.POST.get('new_password1')
+            new_password_confirmation = request.POST.get('new_password2')
+
+            if not check_password(current_password, user.password):
+                messages.error(request, 'Incorrect current password.')
+            elif new_password != new_password_confirmation:
+                messages.error(request, 'Passwords do not match.')
+            else:
+                user.password = make_password(new_password)
+                user.save()
+                messages.success(request, 'Password updated successfully.')
+
+        elif action == 'delete_account':
+            user.delete()
+            request.session.flush()
+            messages.success(request, 'Account deleted successfully.')
+            return redirect('login')
+
+        return redirect('profile')
+
 
 
 class DashboardView(View):
@@ -163,12 +207,12 @@ class DashboardView(View):
         # 1. Security: Ensure user is logged in via your custom session
         user_id = request.session.get('user_id')
         if not user_id:
-            return redirect('user:login')
+            return redirect('login')
 
         try:
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
-            return redirect('user:login')
+            return redirect('login')
 
         # --- CALCULATIONS ---
 

@@ -55,11 +55,14 @@
 
         <div class="p-6 border-t border-gray-100">
             <div class="flex items-center">
-                <div class="bg-takapi-blue-light rounded-full h-10 w-10 flex items-center justify-center text-white font-bold">
-                    {{ user.fname|slice:":1" }}
+                <div class="bg-takapi-blue-light rounded-full h-10 w-10 flex-shrink-0 flex items-center justify-center text-white font-bold">
+                    {{ user.first_name|slice:":1" }}
                 </div>
-                <div class="ml-3">
-                    <p class="text-sm font-medium text-gray-700">{{ user.fname }} {{ user.lname }}</p>
+
+                <div class="ml-3 min-w-0">
+                    <p class="text-sm font-medium text-gray-700 truncate" title="{{ user.first_name }} {{ user.last_name }}">
+                        {{ user.first_name }} {{ user.last_name }}
+                    </p>
                     <a href="/profile/"><p class="text-xs underline text-gray-500">View Profile</p></a>
                 </div>
             </div>
