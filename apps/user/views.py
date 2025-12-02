@@ -1,8 +1,10 @@
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Sum
 from django.shortcuts import render, redirect, reverse
+from django.utils.decorators import method_decorator
 from django.views import View
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
 
 from apps.user.models import Currency, User
@@ -12,6 +14,7 @@ from apps.savings.models import Saving, SavingGoal
 from apps.reminder.models import Reminder
 
 
+@method_decorator(never_cache, name='dispatch')
 class IndexView(View):
     template_name = 'index.html'
 
@@ -124,6 +127,7 @@ class SignupView(View):
             })
 
 
+@method_decorator(never_cache, name='dispatch')
 class ProfileView(TemplateView):
     template_name = 'user-profile.html'
 
@@ -199,6 +203,7 @@ class ProfileView(TemplateView):
         return redirect('user:profile')
 
 
+@method_decorator(never_cache, name='dispatch')
 class DashboardView(View):
     template_name = 'dashboard.html'
 

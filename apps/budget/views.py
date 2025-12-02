@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 
 from .models import Budget
 from ..user.models import User
 
 
+@method_decorator(never_cache, name='dispatch')
 class BudgetView(View):
     template_name = 'budget.html'
 
@@ -22,7 +25,7 @@ class BudgetView(View):
         return render(request, self.template_name, context)
 
 
-@login_required
+
 def create_budget(request):
     if request.method == 'POST':
         Budget.objects.create(

@@ -1,6 +1,8 @@
 from django.db.models import Sum
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 
 from apps.savings.models import SavingGoal, Saving
 from apps.user.models import User
@@ -19,6 +21,7 @@ def saving_history(request):
     pass
 
 
+@method_decorator(never_cache, name='dispatch')
 class SavingsIndexView(View):
     template_name = 'savings/index.html'
 

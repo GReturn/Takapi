@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 
 from apps.reminder.models import Reminder
 from apps.user.models import User
 
 
+@method_decorator(never_cache, name='dispatch')
 class ReminderIndexView(View):
     template_name = 'reminder/index.html'
 
