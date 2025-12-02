@@ -188,7 +188,10 @@ erDiagram
    ```bash
    python manage.py createsuperuser
    ```
-
+3. Populate Currency table:
+    ```bash
+    python manage.py populate_currencies
+    ```
 ---
 
 ## ▶️ Running the Server
