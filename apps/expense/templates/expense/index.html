@@ -1,627 +1,171 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Expense Tracker Dashboard - Takapi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/x-icon" href="{% static 'images/takapi-logo-v2.ico' %}">
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Chart.js library for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      /* Takapi Custom Colors */
-      .bg-takapi-blue-dark {
-        background-color: #0d47a1;
-      }
-      .text-takapi-blue-dark {
-        color: #0d47a1;
-      }
-      .border-takapi-blue-dark {
-        border-color: #0d47a1;
-      }
-      .bg-takapi-green {
-        background-color: #4caf50;
-      }
-      .text-takapi-green {
-        color: #4caf50;
-      }
-      .border-takapi-green {
-        border-color: #4caf50;
-      }
-      .bg-takapi-yellow {
-        background-color: #ffc107;
-      }
-      .text-takapi-yellow {
-        color: #ffc107;
-      }
-      .border-takapi-yellow {
-        border-color: #ffc107;
-      }
-      .hover\:bg-takapi-darker:hover {
-        background-color: #0b3c8a;
-      }
-      /* Custom Modal Styles */
-      .modal {
-        transition: opacity 0.25s ease;
-      }
-    </style>
-  </head>
-  <body class="bg-gray-50 text-gray-800">
-    <!-- Navigation Bar -->
-    <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
-      <div class="container mx-auto flex justify-between items-center">
-        <a href="/" class="flex items-center space-x-2">
-          <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
-          <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
-        </a>
-        <div class="hidden md:flex items-center space-x-8">
-          <a href="#features" class="text-gray-600 hover:text-takapi-blue-dark"
-            >Features</a
-          >
-          <a href="#about" class="text-gray-600 hover:text-takapi-blue-dark"
-            >About</a
-          >
-          <a href="#contact" class="text-gray-600 hover:text-takapi-blue-dark"
-            >Contact</a
-          >
+
+{% block title %}Expenses{% endblock %}
+
+{% block content %}
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Expense Tracker</h1>
+            <p class="text-gray-500">Manage spending. Stay on track with your money.</p>
         </div>
-        <div class="hidden md:flex items-center space-x-4">
-          <a
-            href="/login/"
-            class="text-gray-600 hover:text-takapi-blue-dark font-medium"
-            >Log Out</a
-          >
-        </div>
-        <!-- Mobile Menu Button -->
-        <button class="md:hidden">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            />
-          </svg>
-        </button>
-      </div>
-    </nav>
-
-    <!-- Main Content Area -->
-    <div class="container mx-auto px-4 sm:px-6 py-8">
-      <!-- Page Header -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-takapi-blue-dark mb-2">
-          💰 Expense Tracker Dashboard
-        </h1>
-        <p class="text-md text-gray-600">
-          Overview of your spending habits and recent transactions.
-        </p>
-      </div>
-
-      <!-- KPI Summary Cards -->
-      <div
-        class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-        id="kpi-container"
-      >
-        <!-- Card 1: Monthly Spending -->
-        <div
-          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-takapi-blue-dark"
-        >
-          <h3 class="text-gray-500 text-sm font-semibold uppercase mb-2">
-            Spending (This Month)
-          </h3>
-          <div
-            class="text-3xl font-extrabold text-takapi-blue-dark"
-            id="kpi-monthly-spending"
-          >
-            ₱ 0.00
-          </div>
-        </div>
-
-        <!-- Card 2: Highest Category -->
-        <div
-          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-takapi-yellow"
-        >
-          <h3 class="text-gray-500 text-sm font-semibold uppercase mb-2">
-            Highest Category
-          </h3>
-          <div
-            class="text-3xl font-extrabold text-takapi-yellow"
-            id="kpi-highest-category"
-          >
-            N/A
-          </div>
-        </div>
-
-        <!-- Card 3: Last Expense (MODIFIED STRUCTURE) -->
-        <div
-          class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-takapi-green"
-        >
-          <h3 class="text-gray-500 text-sm font-semibold uppercase mb-2">
-            LAST TRANSACTION
-          </h3>
-          <!-- Date goes first, small font -->
-          <div id="kpi-last-expense-date" class="text-sm text-gray-500 mb-1">
-            N/A
-          </div>
-          <!-- Payment goes second, large font -->
-          <div
-            class="text-3xl font-extrabold text-takapi-green"
-            id="kpi-last-expense"
-          >
-            ₱ 0.00
-          </div>
-        </div>
-      </div>
-
-      <!-- Main Grid Layout (Chart and List) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Left Column: Chart & Action Button (lg:col-span-2) -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Add Expense Button -->
-          <button
-            id="add-expense-btn"
-            onclick="openModalWithCategories('add-expense-modal')"
-            class="w-full bg-takapi-blue-dark text-white p-4 rounded-xl font-bold text-lg shadow-md hover:bg-takapi-darker transition duration-300"
-          >
-            + Log New Expense
-          </button>
-
-          <!-- Spending Trend Chart -->
-          <div class="bg-white rounded-xl shadow-lg p-6">
-            <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">
-              Monthly Spending Trend
-            </h2>
-            <div class="h-64">
-              <canvas id="monthlySpendingChart"></canvas>
-            </div>
-          </div>
-
-          <!-- Category Breakdown Placeholder -->
-          <div class="bg-white rounded-xl shadow-lg p-6">
-            <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">
-              Expense Breakdown by Category (This Month)
-            </h2>
-            <div class="h-48 flex justify-center items-center">
-              <canvas id="categoryBreakdownChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Column: Recent Transactions & Category List (lg:col-span-1) -->
-        <div class="lg:col-span-1 space-y-6">
-          <!-- Recent Transactions Card -->
-          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div class="bg-gray-50 p-4 border-b border-gray-200">
-              <h2 class="text-xl font-semibold text-takapi-blue-dark">
-                Recent Transactions
-              </h2>
-            </div>
-            <ul class="divide-y divide-gray-100" id="recent-transactions-list">
-              <!-- Transactions rendered here -->
-            </ul>
-            <div class="p-4 text-center">
-              <a
-                href="#"
-                class="text-takapi-blue-dark hover:underline font-medium text-sm"
-                >View All History</a
-              >
-            </div>
-          </div>
-
-          <!-- Category Management Card -->
-          <div class="bg-white rounded-xl shadow-lg p-6">
-            <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">
-              Manage Categories
-            </h2>
-            <ul class="space-y-3" id="category-list">
-              <!-- Categories rendered here -->
-            </ul>
-            <button
-              onclick="openModal('add-category-modal')"
-              class="w-full mt-4 bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition duration-150"
-            >
-              + New Category
+        <div class="flex items-center space-x-4">
+            <button onclick="openModal('add-category-modal')"
+                class="bg-white text-gray-600 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition shadow-sm text-sm font-medium">
+                Manage Categories
             </button>
-          </div>
+
+            <button onclick="openModalWithCategories('add-expense-modal')"
+                class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition shadow-sm text-sm font-medium">
+                + Log New Expense
+            </button>
         </div>
-      </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="kpi-container">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-takapi-blue-dark">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Spending (This Month)</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-1" id="kpi-monthly-spending">₱ 0.00</h2>
+                </div>
+                <div class="p-2 bg-blue-50 rounded-lg text-takapi-blue-dark">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-yellow-400">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Highest Category</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mt-1" id="kpi-highest-category">N/A</h2>
+                </div>
+                <div class="p-2 bg-yellow-50 rounded-lg text-yellow-500">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-takapi-green">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Last Transaction</p>
+                    <div class="mt-1">
+                        <span class="text-xs text-gray-500 block" id="kpi-last-expense-date">N/A</span>
+                        <h2 class="text-2xl font-bold text-gray-800" id="kpi-last-expense">₱ 0.00</h2>
+                    </div>
+                </div>
+                <div class="p-2 bg-green-50 rounded-lg text-takapi-green">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- MODAL 1: Log New Expense (CREATE) -->
-    <div
-      id="add-expense-modal"
-      class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-transform duration-300 scale-95"
-      >
-        <div class="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 class="text-2xl font-bold text-takapi-blue-dark">
-            Log New Expense
-          </h3>
-          <button
-            onclick="closeModal('add-expense-modal')"
-            class="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+            <section class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-bold text-takapi-blue-dark mb-4">Monthly Spending Trend</h3>
+                <div class="h-64 w-full">
+                    <canvas id="monthlySpendingChart"></canvas>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-takapi-blue-dark">Recent Transactions</h3>
+                    <button class="text-sm text-takapi-blue-light hover:underline">View All</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-xs text-gray-500 border-b border-gray-100">
+                                <th class="font-medium py-3">Description</th>
+                                <th class="font-medium py-3">Category</th>
+                                <th class="font-medium py-3">Date</th>
+                                <th class="font-medium py-3 text-right">Amount</th>
+                                <th class="font-medium py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm" id="recent-transactions-table-body">
+                           </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
-        <form id="add-expense-form" onsubmit="handleExpenseSubmit(event)">
-          <div class="mb-4">
-            <label
-              for="expense-amount"
-              class="block text-sm font-medium text-gray-700"
-              >Amount (₱)</label
-            >
-            <input
-              type="number"
-              id="expense-amount"
-              min="0.01"
-              step="0.01"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-              placeholder="e.g., 500.00"
-            />
-          </div>
-          <div class="mb-4">
-            <label
-              for="expense-category"
-              class="block text-sm font-medium text-gray-700"
-              >Category</label
-            >
-            <select
-              id="expense-category"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-            >
-              <!-- Options populated by JS -->
-            </select>
-          </div>
-          <div class="mb-4">
-            <label
-              for="expense-description"
-              class="block text-sm font-medium text-gray-700"
-              >Description</label
-            >
-            <input
-              type="text"
-              id="expense-description"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-              placeholder="e.g., Lunch at cafeteria"
-            />
-          </div>
-          <div class="mb-6">
-            <label
-              for="expense-date"
-              class="block text-sm font-medium text-gray-700"
-              >Date</label
-            >
-            <input
-              type="date"
-              id="expense-date"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-              value="{{ request.POST.date.value|default:'' }}"
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-takapi-green text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-300"
-          >
-            Save Expense
-          </button>
-        </form>
-      </div>
+
+        <div class="space-y-8">
+            <section class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-bold text-takapi-blue-dark mb-4">Category Breakdown</h3>
+                <div class="h-48 flex justify-center items-center">
+                    <canvas id="categoryBreakdownChart"></canvas>
+                </div>
+            </section>
+
+            <section class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-bold text-takapi-blue-dark mb-4">Your Categories</h3>
+                <ul class="space-y-3" id="category-list">
+                   </ul>
+            </section>
+        </div>
     </div>
 
-    <!-- MODAL 1.5: Edit Existing Expense (UPDATE) -->
-    <div
-      id="edit-expense-modal"
-      class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-transform duration-300 scale-95"
-      >
-        <div class="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 class="text-2xl font-bold text-takapi-blue-dark">Edit Expense</h3>
-          <button
-            onclick="closeModal('edit-expense-modal')"
-            class="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+    <div id="add-expense-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-transform duration-300 scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-takapi-blue-dark">Log New Expense</h3>
+                <button onclick="closeModal('add-expense-modal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="add-expense-form" onsubmit="handleExpenseSubmit(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Amount</label>
+                        <input type="number" id="expense-amount" min="0.01" step="0.01" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="expense-category" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none bg-white">
+                           </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <input type="text" id="expense-description" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none" placeholder="e.g. Lunch">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="expense-date" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-takapi-green text-white py-2 rounded-lg font-bold hover:bg-green-600 transition">Save Expense</button>
+            </form>
         </div>
-        <form id="edit-expense-form" onsubmit="handleExpenseEditSubmit(event)">
-          <input type="hidden" id="edit-expense-id" />
-          <div class="mb-4">
-            <label
-              for="edit-expense-amount"
-              class="block text-sm font-medium text-gray-700"
-              >Amount (₱)</label
-            >
-            <input
-              type="number"
-              id="edit-expense-amount"
-              min="0.01"
-              step="0.01"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-            />
-          </div>
-          <div class="mb-4">
-            <label
-              for="edit-expense-category"
-              class="block text-sm font-medium text-gray-700"
-              >Category</label
-            >
-            <select
-              id="edit-expense-category"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-            >
-              <!-- Options populated by JS -->
-            </select>
-          </div>
-          <div class="mb-4">
-            <label
-              for="edit-expense-description"
-              class="block text-sm font-medium text-gray-700"
-              >Description</label
-            >
-            <input
-              type="text"
-              id="edit-expense-description"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-            />
-          </div>
-          <div class="mb-6">
-            <label
-              for="edit-expense-date"
-              class="block text-sm font-medium text-gray-700"
-              >Date</label
-            >
-            <input
-              type="date"
-              id="edit-expense-date"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-takapi-blue-dark text-white py-2 rounded-lg font-semibold hover:bg-takapi-darker transition duration-300"
-          >
-            Update Expense
-          </button>
-        </form>
-      </div>
     </div>
 
-    <!-- MODAL 2: Add New Category (CREATE) -->
-    <div
-      id="add-category-modal"
-      class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95"
-      >
-        <div class="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 class="text-xl font-bold text-takapi-blue-dark">
-            Create New Category
-          </h3>
-          <button
-            onclick="closeModal('add-category-modal')"
-            class="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+    <div id="add-category-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-takapi-blue-dark">New Category</h3>
+                <button onclick="closeModal('add-category-modal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form id="add-category-form" onsubmit="handleCategorySubmit(event)">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="category-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none" placeholder="e.g. Entertainment">
+                </div>
+                <button type="submit" class="w-full bg-takapi-blue-dark text-white py-2 rounded-lg font-bold hover:bg-blue-800 transition">Create Category</button>
+            </form>
         </div>
-        <form id="add-category-form" onsubmit="handleCategorySubmit(event)">
-          <div class="mb-4">
-            <label
-              for="category-name"
-              class="block text-sm font-medium text-gray-700"
-              >Category Name</label
-            >
-            <input
-              type="text"
-              id="category-name"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-              placeholder="e.g., Entertainment"
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-takapi-green text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition duration-300"
-          >
-            Create Category
-          </button>
-        </form>
-      </div>
     </div>
 
-    <!-- MODAL 2.5: Edit Existing Category (UPDATE) -->
-    <div
-      id="edit-category-modal"
-      class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95"
-      >
-        <div class="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 class="text-xl font-bold text-takapi-blue-dark">Edit Category</h3>
-          <button
-            onclick="closeModal('edit-category-modal')"
-            class="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
-        </div>
-        <form
-          id="edit-category-form"
-          onsubmit="handleCategoryEditSubmit(event)"
-        >
-          <input type="hidden" id="edit-category-id" />
-          <div class="mb-4">
-            <label
-              for="edit-category-name"
-              class="block text-sm font-medium text-gray-700"
-              >Category Name</label
-            >
-            <input
-              type="text"
-              id="edit-category-name"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-takapi-blue-dark focus:border-takapi-blue-dark"
-            />
-          </div>
-          <button
-            type="submit"
-            class="w-full bg-takapi-blue-dark text-white py-2 rounded-lg font-semibold hover:bg-takapi-darker transition duration-300"
-          >
-            Update Category
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- MODAL 3: Delete Confirmation -->
-    <div
-      id="delete-confirmation-modal"
-      class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none"
-    >
-      <div
-        class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95"
-      >
-        <div class="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 class="text-xl font-bold text-red-600">Confirm Deletion</h3>
-          <button
-            onclick="closeModal('delete-confirmation-modal')"
-            class="text-gray-400 hover:text-gray-600"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
-        </div>
-        <div class="mb-6">
-          <p class="text-gray-700 mb-4">
-            Are you sure you want to delete the following item? This action
-            cannot be undone.
-          </p>
-          <div
-            id="delete-item-details"
-            class="p-3 bg-red-50 rounded-lg border border-red-200 text-sm font-medium"
-          >
-            <!-- Item details (name, type) will be inserted here by JS -->
-          </div>
-          <p
-            id="delete-warning"
-            class="text-xs text-red-500 mt-2 italic hidden"
-          >
-            Warning: Existing expenses using this category will become
-            "Uncategorized".
-          </p>
-        </div>
-
-        <div class="flex space-x-3">
-          <button
-            id="confirm-delete-btn"
-            class="w-full bg-red-600 text-white py-2 rounded-lg font-semibold hover:bg-red-700 transition duration-300"
-          >
-            Confirm Delete
-          </button>
-          <button
-            onclick="closeModal('delete-confirmation-modal')"
-            class="w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-300 transition duration-300"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    {% include "partials/footer.html" %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
     <script>
-      // --- CONSTANTS AND INITIAL DATA ---
+      // --- CONSTANTS AND INITIAL DATA (Local Storage Mock) ---
       const EXPENSES_KEY = "takapi_expenses";
       const CATEGORIES_KEY = "takapi_categories";
 
@@ -633,13 +177,9 @@
         { id: "cat-4", name: "Bills & Utilities", color: "#F59E0B" },
       ];
 
-      let currentDeleteCallback = null; // Stores the function to run on confirmation
-
       // --- HELPER FUNCTIONS ---
       const formatCurrency = (amount) => {
-        return `₱ ${parseFloat(amount)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+        return `₱ ${parseFloat(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
       };
 
       const saveToLocalStorage = () => {
@@ -650,17 +190,6 @@
       const getCategoryName = (id) => {
         const cat = categories.find((c) => c.id === id);
         return cat ? cat.name : "Uncategorized";
-      };
-
-      const getCategoryColor = (id) => {
-        const cat = categories.find((c) => c.id === id);
-        return cat ? cat.color : "#6B7280";
-      };
-
-      const getMonthLabel = (dateStr) => {
-        const d = new Date(dateStr);
-        // Format date for chart labels (e.g., Oct 2025)
-        return d.toLocaleString("en-US", { month: "short", year: "numeric" });
       };
 
       const getCategorySelectorOptions = (selectedId = "") => {
@@ -682,12 +211,11 @@
         }
       };
 
-      // New function to handle category population for the Expense modals
       const openModalWithCategories = (id, selectedCategoryId = "") => {
-        // Correctly populate the category selector for the ADD expense modal
-        const categorySelector = document.getElementById("expense-category");
-        categorySelector.innerHTML =
-          getCategorySelectorOptions(selectedCategoryId);
+        const select = document.getElementById("expense-category");
+        if(select) {
+            select.innerHTML = getCategorySelectorOptions(selectedCategoryId);
+        }
         openModal(id);
       };
 
@@ -702,462 +230,174 @@
         }
       };
 
-      // --- DELETE MODAL FUNCTIONALITY ---
-      const openDeleteConfirmation = (
-        itemName,
-        itemType,
-        callback,
-        showWarning = false
-      ) => {
-        document.getElementById("delete-item-details").innerHTML = `
-            <strong>Type:</strong> ${itemType}<br>
-            <strong>Name:</strong> ${itemName}
-          `;
-
-        const warningEl = document.getElementById("delete-warning");
-        if (showWarning) {
-          warningEl.classList.remove("hidden");
-        } else {
-          warningEl.classList.add("hidden");
-        }
-
-        // Store the callback function to be executed when user confirms
-        currentDeleteCallback = callback;
-
-        openModal("delete-confirmation-modal");
-      };
-
-      document
-        .getElementById("confirm-delete-btn")
-        .addEventListener("click", () => {
-          if (currentDeleteCallback) {
-            currentDeleteCallback();
-          }
-          currentDeleteCallback = null; // Clear callback
-          closeModal("delete-confirmation-modal");
-        });
-
       // --- RENDERING FUNCTIONS ---
-
       let monthlyChartInstance = null;
       let categoryChartInstance = null;
 
       const renderKPIs = () => {
-        // Calculate Total Monthly Spending
         const today = new Date();
         const currentMonthExpenses = expenses.filter((e) => {
           const expenseDate = new Date(e.date);
-          return (
-            expenseDate.getMonth() === today.getMonth() &&
-            expenseDate.getFullYear() === today.getFullYear()
-          );
+          return (expenseDate.getMonth() === today.getMonth() && expenseDate.getFullYear() === today.getFullYear());
         });
 
-        const monthlyTotal = currentMonthExpenses.reduce(
-          (sum, e) => sum + parseFloat(e.amount),
-          0
-        );
-        document.getElementById("kpi-monthly-spending").textContent =
-          formatCurrency(monthlyTotal);
+        const monthlyTotal = currentMonthExpenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+        document.getElementById("kpi-monthly-spending").textContent = formatCurrency(monthlyTotal);
 
-        // Calculate Highest Category
         const categoryTotals = currentMonthExpenses.reduce((acc, e) => {
           const amount = parseFloat(e.amount);
           acc[e.categoryId] = (acc[e.categoryId] || 0) + amount;
           return acc;
         }, {});
 
-        const highestCatId = Object.keys(categoryTotals).reduce(
-          (a, b) => (categoryTotals[a] > categoryTotals[b] ? a : b),
-          null
-        );
-        const highestCatName = highestCatId
-          ? getCategoryName(highestCatId)
-          : "N/A";
-        document.getElementById("kpi-highest-category").textContent =
-          highestCatName;
+        const highestCatId = Object.keys(categoryTotals).reduce((a, b) => (categoryTotals[a] > categoryTotals[b] ? a : b), null);
+        document.getElementById("kpi-highest-category").textContent = highestCatId ? getCategoryName(highestCatId) : "N/A";
 
         // Last Transaction
-        const lastExpense =
-          expenses.length > 0
-            ? expenses.sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-            : null;
-
+        const lastExpense = expenses.length > 0 ? expenses.sort((a, b) => new Date(b.date) - new Date(a.date))[0] : null;
         if (lastExpense) {
-          const date = new Date(lastExpense.date);
-          const dateStr = date.toLocaleDateString();
-
-          // --- UPDATED LAST TRANSACTION RENDERING ---
-          document.getElementById("kpi-last-expense-date").textContent =
-            dateStr;
-          document.getElementById("kpi-last-expense").textContent =
-            formatCurrency(lastExpense.amount);
-        } else {
-          document.getElementById("kpi-last-expense-date").textContent = "N/A";
-          document.getElementById("kpi-last-expense").textContent = "₱ 0.00";
+            document.getElementById("kpi-last-expense-date").textContent = new Date(lastExpense.date).toLocaleDateString();
+            document.getElementById("kpi-last-expense").textContent = formatCurrency(lastExpense.amount);
         }
       };
 
       const renderRecentTransactions = () => {
-        const list = document.getElementById("recent-transactions-list");
-        list.innerHTML = "";
+        const tbody = document.getElementById("recent-transactions-table-body");
+        tbody.innerHTML = "";
+        const sortedExpenses = [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
 
-        // Sort by date descending before slicing
-        const sortedExpenses = [...expenses].sort(
-          (a, b) => new Date(b.date) - new Date(a.date)
-        );
-        const recent = sortedExpenses.slice(0, 5); // Show top 5 recent expenses
-
-        if (recent.length === 0) {
-          list.innerHTML = `<li class="p-4 text-center text-gray-500">No expenses logged yet.</li>`;
+        if (sortedExpenses.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-gray-500">No expenses logged yet.</td></tr>`;
           return;
         }
 
-        recent.forEach((e) => {
-          const listItem = document.createElement("li");
-          listItem.className =
-            "p-4 flex justify-between items-center hover:bg-gray-50";
-
-          const catName = getCategoryName(e.categoryId);
-
-          listItem.innerHTML = `
-            <div>
-              <p class="font-medium">${formatCurrency(e.amount)}</p>
-              <p class="text-sm text-gray-500">${catName}</p>
-            </div>
-            <div class="text-right space-x-2">
-                <span class="text-xs text-gray-400 block">${
-                  e.description
-                }</span>
-                <button onclick="openEditExpenseModal('${
-                  e.id
-                }')" class="text-takapi-blue-dark hover:text-takapi-darker text-xs font-medium mt-1">Edit</button>
-                <button onclick="triggerDeleteExpense('${
-                  e.id
-                }')" class="text-red-500 hover:text-red-700 text-xs font-medium mt-1">Delete</button>
-            </div>
-          `;
-          list.appendChild(listItem);
+        sortedExpenses.forEach((e) => {
+            const row = document.createElement("tr");
+            row.className = "group hover:bg-gray-50 transition border-b border-gray-50 last:border-0";
+            row.innerHTML = `
+                <td class="py-3 text-gray-800 font-medium">${e.description}</td>
+                <td class="py-3">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        ${getCategoryName(e.categoryId)}
+                    </span>
+                </td>
+                <td class="py-3 text-gray-500">${new Date(e.date).toLocaleDateString()}</td>
+                <td class="py-3 text-right font-medium text-gray-800">- ${formatCurrency(e.amount)}</td>
+                <td class="py-3 text-right">
+                    <button onclick="doDeleteExpense('${e.id}')" class="text-red-500 hover:text-red-700 text-xs font-medium">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(row);
         });
       };
 
       const renderCategories = () => {
         const list = document.getElementById("category-list");
         list.innerHTML = "";
-
-        if (categories.length === 0) {
-          list.innerHTML = `<li class="text-center text-gray-500 py-2">No categories defined.</li>`;
-          return;
-        }
-
         categories.forEach((c) => {
-          const listItem = document.createElement("li");
-          listItem.className = "flex justify-between items-center text-sm";
-          listItem.innerHTML = `
-            <div class="flex items-center space-x-2">
-                <span class="inline-block w-3 h-3 rounded-full" style="background-color: ${c.color}"></span>
-                <span>${c.name}</span>
-            </div>
-            <span class="text-gray-500 space-x-2">
-                <button onclick="openEditCategoryModal('${c.id}')" class="text-takapi-blue-dark hover:text-takapi-darker font-medium">Edit</button> / 
-                <button onclick="triggerDeleteCategory('${c.id}')" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
-            </span>
-          `;
-          list.appendChild(listItem);
+            const li = document.createElement("li");
+            li.className = "flex justify-between items-center text-sm p-2 hover:bg-gray-50 rounded-lg";
+            li.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span class="w-3 h-3 rounded-full" style="background-color: ${c.color}"></span>
+                    <span class="text-gray-700 font-medium">${c.name}</span>
+                </div>
+                <button onclick="doDeleteCategory('${c.id}')" class="text-gray-400 hover:text-red-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            `;
+            list.appendChild(li);
         });
       };
 
       const renderCharts = () => {
-        // ------------------ MONTHLY SPENDING TREND (LINE CHART) ------------------
+        // LINE CHART
         if (monthlyChartInstance) monthlyChartInstance.destroy();
+        const ctxMonthly = document.getElementById("monthlySpendingChart").getContext("2d");
 
-        // Ensure data is sorted for correct chronological calculation
-        const sortedExpenses = [...expenses].sort(
-          (a, b) => new Date(a.date) - new Date(b.date)
-        );
+        // Mock data logic for chart
+        const sorted = [...expenses].sort((a, b) => new Date(a.date) - new Date(b.date));
+        // In a real app, you would aggregate data by month here
+        const labels = sorted.map(e => new Date(e.date).toLocaleDateString());
+        const data = sorted.map(e => e.amount);
 
-        const monthlyTotals = sortedExpenses.reduce((acc, e) => {
-          const monthYear = getMonthLabel(e.date);
-          const amount = parseFloat(e.amount);
-          acc[monthYear] = (acc[monthYear] || 0) + amount;
-          return acc;
-        }, {});
-
-        const monthlyLabels = Object.keys(monthlyTotals).slice(-6); // Last 6 months
-        const monthlyValues = monthlyLabels.map(
-          (label) => monthlyTotals[label]
-        );
-
-        const ctxMonthly = document
-          .getElementById("monthlySpendingChart")
-          .getContext("2d");
         monthlyChartInstance = new Chart(ctxMonthly, {
-          type: "line",
-          data: {
-            labels: monthlyLabels,
-            datasets: [
-              {
-                label: "Total Spending (₱)",
-                data: monthlyValues,
-                backgroundColor: "rgba(13, 71, 161, 0.5)", // takapi-blue-dark with opacity
-                borderColor: "#0d47a1", // takapi-blue-dark
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: {
-                  callback: function (value) {
-                    return "₱" + value.toLocaleString();
-                  },
-                },
-              },
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Spending',
+                    data: data,
+                    borderColor: '#0d47a1',
+                    tension: 0.4,
+                    fill: false
+                }]
             },
-          },
+            options: { responsive: true, maintainAspectRatio: false }
         });
 
-        // ------------------ CATEGORY BREAKDOWN (PIE CHART) ------------------
+        // DOUGHNUT CHART
         if (categoryChartInstance) categoryChartInstance.destroy();
+        const ctxCat = document.getElementById("categoryBreakdownChart").getContext("2d");
 
-        const today = new Date();
-        const currentMonthExpenses = expenses.filter((e) => {
-          const expenseDate = new Date(e.date);
-          return (
-            expenseDate.getMonth() === today.getMonth() &&
-            expenseDate.getFullYear() === today.getFullYear()
-          );
-        });
+        const catCounts = {};
+        expenses.forEach(e => { catCounts[e.categoryId] = (catCounts[e.categoryId] || 0) + parseFloat(e.amount) });
 
-        const categoryBreakdown = currentMonthExpenses.reduce((acc, e) => {
-          const catId = e.categoryId;
-          const amount = parseFloat(e.amount);
-          acc[catId] = (acc[catId] || 0) + amount;
-          return acc;
-        }, {});
-
-        const pieLabels = Object.keys(categoryBreakdown).map((id) =>
-          getCategoryName(id)
-        );
-        const pieValues = Object.keys(categoryBreakdown).map(
-          (id) => categoryBreakdown[id]
-        );
-        const pieColors = Object.keys(categoryBreakdown).map((id) =>
-          getCategoryColor(id)
-        );
-
-        const ctxCategory = document
-          .getElementById("categoryBreakdownChart")
-          .getContext("2d");
-        categoryChartInstance = new Chart(ctxCategory, {
-          type: "doughnut", // Changed to doughnut for better center focus
-          data: {
-            labels: pieLabels,
-            datasets: [
-              {
-                data: pieValues,
-                backgroundColor: pieColors,
-                hoverOffset: 4,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: "right",
-                labels: {
-                  boxWidth: 10,
-                  padding: 10,
-                },
-              },
+        categoryChartInstance = new Chart(ctxCat, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(catCounts).map(id => getCategoryName(id)),
+                datasets: [{
+                    data: Object.values(catCounts),
+                    backgroundColor: ['#EF4444', '#3B82F6', '#10B981', '#F59E0B'],
+                }]
             },
-          },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
         });
       };
 
-      // --- EXPENSE CRUD FUNCTIONS ---
-
-      const handleExpenseSubmit = (event) => {
-        event.preventDefault();
-
-        const amount = document.getElementById("expense-amount").value;
-        const categoryId = document.getElementById("expense-category").value;
-        const description = document.getElementById(
-          "expense-description"
-        ).value;
+      // --- LOGIC HANDLERS ---
+      const handleExpenseSubmit = (e) => {
+        e.preventDefault();
+        const amt = document.getElementById("expense-amount").value;
+        const cat = document.getElementById("expense-category").value;
+        const desc = document.getElementById("expense-description").value;
         const date = document.getElementById("expense-date").value;
 
-        if (!amount || !categoryId || !description || !date) {
-          console.error("Validation failed: Missing expense fields.");
-          return;
-        }
-
-        const newExpense = {
-          id: Date.now().toString(), // Mock ID
-          amount: amount,
-          categoryId: categoryId,
-          description: description,
-          date: date,
-        };
-
-        expenses.push(newExpense); // Add to the end
-        document.getElementById("add-expense-form").reset();
+        expenses.push({ id: Date.now().toString(), amount: amt, categoryId: cat, description: desc, date: date });
         closeModal("add-expense-modal");
+        document.getElementById("add-expense-form").reset();
         updateDashboard();
       };
 
-      const openEditExpenseModal = (id) => {
-        const expense = expenses.find((e) => e.id === id);
-        if (expense) {
-          document.getElementById("edit-expense-id").value = expense.id;
-          document.getElementById("edit-expense-amount").value = expense.amount;
-          document.getElementById("edit-expense-description").value =
-            expense.description;
-          document.getElementById("edit-expense-date").value = expense.date;
-
-          // Populate category selector with the correct option pre-selected
-          document.getElementById("edit-expense-category").innerHTML =
-            getCategorySelectorOptions(expense.categoryId);
-
-          openModal("edit-expense-modal");
-        }
-      };
-
-      const handleExpenseEditSubmit = (event) => {
-        event.preventDefault();
-        const id = document.getElementById("edit-expense-id").value;
-        const amount = document.getElementById("edit-expense-amount").value;
-        const categoryId = document.getElementById(
-          "edit-expense-category"
-        ).value;
-        const description = document.getElementById(
-          "edit-expense-description"
-        ).value;
-        const date = document.getElementById("edit-expense-date").value;
-
-        if (!amount || !categoryId || !description || !date) {
-          console.error("Validation failed: Missing expense edit fields.");
-          return;
-        }
-
-        const index = expenses.findIndex((e) => e.id === id);
-        if (index !== -1) {
-          expenses[index] = {
-            ...expenses[index],
-            amount,
-            categoryId,
-            description,
-            date,
-          };
-          closeModal("edit-expense-modal");
-          updateDashboard();
-        }
+      const handleCategorySubmit = (e) => {
+        e.preventDefault();
+        const name = document.getElementById("category-name").value;
+        const color = "#" + Math.floor(Math.random()*16777215).toString(16);
+        categories.push({ id: `cat-${Date.now()}`, name: name, color: color });
+        closeModal("add-category-modal");
+        document.getElementById("add-category-form").reset();
+        updateDashboard();
       };
 
       const doDeleteExpense = (id) => {
-        expenses = expenses.filter((e) => e.id !== id);
-        updateDashboard();
-      };
-
-      const triggerDeleteExpense = (id) => {
-        const expense = expenses.find((e) => e.id === id);
-        const itemName = `${formatCurrency(expense.amount)} - ${getCategoryName(
-          expense.categoryId
-        )}`;
-        openDeleteConfirmation(
-          itemName,
-          "Expense",
-          () => doDeleteExpense(id),
-          false
-        );
-      };
-
-      // --- CATEGORY CRUD FUNCTIONS ---
-
-      const handleCategorySubmit = (event) => {
-        event.preventDefault();
-
-        const name = document.getElementById("category-name").value.trim();
-
-        if (!name) {
-          console.error("Validation failed: Category name cannot be empty.");
-          return;
-        }
-
-        // Simple mock color assignment for visual distinction
-        const newColor =
-          "#" +
-          Math.floor(Math.random() * 16777215)
-            .toString(16)
-            .padStart(6, "0");
-
-        const newCategory = {
-          id: `cat-${Date.now()}`,
-          name: name,
-          color: newColor,
-        };
-
-        categories.push(newCategory);
-        document.getElementById("add-category-form").reset();
-        closeModal("add-category-modal");
-        updateDashboard();
-      };
-
-      const openEditCategoryModal = (id) => {
-        const category = categories.find((c) => c.id === id);
-        if (category) {
-          document.getElementById("edit-category-id").value = category.id;
-          document.getElementById("edit-category-name").value = category.name;
-          openModal("edit-category-modal");
-        }
-      };
-
-      const handleCategoryEditSubmit = (event) => {
-        event.preventDefault();
-        const id = document.getElementById("edit-category-id").value;
-        const name = document.getElementById("edit-category-name").value.trim();
-
-        if (!name) {
-          console.error("Validation failed: Category name cannot be empty.");
-          return;
-        }
-
-        const index = categories.findIndex((c) => c.id === id);
-        if (index !== -1) {
-          categories[index] = {
-            ...categories[index],
-            name,
-          };
-          closeModal("edit-category-modal");
-          updateDashboard();
+        if(confirm("Delete this expense?")) {
+            expenses = expenses.filter(e => e.id !== id);
+            updateDashboard();
         }
       };
 
       const doDeleteCategory = (id) => {
-        categories = categories.filter((c) => c.id !== id);
-        // Note: Existing expenses linked to this category will now show as 'Uncategorized'.
-        updateDashboard();
+        if(confirm("Delete this category?")) {
+            categories = categories.filter(c => c.id !== id);
+            updateDashboard();
+        }
       };
 
-      const triggerDeleteCategory = (id) => {
-        const category = categories.find((c) => c.id === id);
-        openDeleteConfirmation(
-          category.name,
-          "Category",
-          () => doDeleteCategory(id),
-          true
-        ); // Show warning for category deletion
-      };
-
-      // --- MAIN INITIALIZATION ---
       const updateDashboard = () => {
         saveToLocalStorage();
         renderKPIs();
@@ -1166,20 +406,9 @@
         renderCharts();
       };
 
-      // Set today's date as default for date input in the creation modal (Good UX)
-      document.getElementById("expense-date").valueAsDate = new Date();
-
-      // Initialize dashboard on load
+      // Init
+      const dateInput = document.getElementById("expense-date");
+      if(dateInput) dateInput.valueAsDate = new Date();
       window.onload = updateDashboard;
-
-      // Close modal on outside click (Good UX)
-      document.querySelectorAll(".modal").forEach((modal) => {
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) {
-            closeModal(modal.id);
-          }
-        });
-      });
     </script>
-  </body>
-</html>
+{% endblock %}

@@ -1,90 +1,20 @@
 {% extends 'base.html' %} {% load static %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Budget{% endblock %}
 
 {% block content %}
-    {#    <!DOCTYPE html>#}
-    {#    <html lang="en">#}
-    {#    <head>#}
-    {#        <meta charset="UTF-8">#}
-    {#        <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
-    {#        <title>Budget Manager - Takapi</title>#}
-    {#        <script src="https://cdn.tailwindcss.com"></script>#}
-    {#        <link rel="icon" type="image/x-icon" href="{% static 'images/takapi-logo-v2.ico' %}">#}
-    {#        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">#}
-    {#        <style>#}
-    {#            body {#}
-    {#                font-family: 'Inter', sans-serif;#}
-    {#            }#}
-    {##}
-    {#            /* Custom colors from the Takapi logo */#}
-    {#            .bg-takapi-blue-dark {#}
-    {#                background-color: #0D47A1;#}
-    {#            }#}
-    {##}
-    {#            .text-takapi-blue-dark {#}
-    {#                color: #0D47A1;#}
-    {#            }#}
-    {##}
-    {#            .border-takapi-blue-dark {#}
-    {#                border-color: #0D47A1;#}
-    {#            }#}
-    {##}
-    {#            .hover\:bg-takapi-blue-darker:hover {#}
-    {#                background-color: #0b3c8a;#}
-    {#            }#}
-    {##}
-    {#            .bg-takapi-green {#}
-    {#                background-color: #4CAF50;#}
-    {#            }#}
-    {##}
-    {#            .text-takapi-green {#}
-    {#                color: #4CAF50;#}
-    {#            }#}
-    {##}
-    {#            .bg-takapi-blue-light {#}
-    {#                background-color: #2196F3;#}
-    {#            }#}
-    {##}
-    {#            .text-takapi-blue-light {#}
-    {#                color: #2196F3;#}
-    {#            }#}
-    {#        </style>#}
-    {#    </head>#}
-    {#    <body class="bg-gray-50 text-gray-800">#}
-
-    {#    <!-- Navigation Bar -->#}
-    {#    <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">#}
-    {#        <div class="container mx-auto flex justify-between items-center">#}
-    {#            <a href="/" class="flex items-center space-x-2">#}
-    {#                <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">#}
-    {#                <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>#}
-    {#            </a>#}
-    {#            <div class="hidden md:flex items-center space-x-8">#}
-    {#                <a href="#features" class="text-gray-600 hover:text-takapi-blue-dark">Features</a>#}
-    {#                <a href="#about" class="text-gray-600 hover:text-takapi-blue-dark">About</a>#}
-    {#                <a href="#contact" class="text-gray-600 hover:text-takapi-blue-dark">Contact</a>#}
-    {#            </div>#}
-    {#            <div class="hidden md:flex items-center space-x-4">#}
-    {#                <a href="/login/" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log Out</a>#}
-    {#            </div>#}
-    {#            <!-- Mobile Menu Button -->#}
-    {#            <button class="md:hidden">#}
-    {#                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"#}
-    {#                     stroke="currentColor">#}
-    {#                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>#}
-    {#                </svg>#}
-    {#            </button>#}
-    {#        </div>#}
-    {#    </nav>#}
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Budget Planner</h1>
+            <p class="text-gray-500">Set and manage your budgets to stay on track with your financial goals.</p>
+        </div>
+        <div class="flex items-center space-x-4">
+{#            <button class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition shadow-sm text-sm font-medium">#}
+{#                + Create New Budget#}
+{#            </button>#}
+        </div>
+    </header>
 
     <!-- Main Content -->
-    <div class="container mx-auto px-6 py-8">
-
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-takapi-blue-dark mb-2">💼 Budget Manager</h1>
-            <p class="text-lg text-gray-600">Set and manage your budgets to stay on track with your financial goals.</p>
-        </div>
 
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -284,11 +214,7 @@
             </div>
 
         </div>
-    </div>
 
-
-    <!-- Footer -->
-    {#    {% include "partials/footer.html" %}#}
 
     <!-- Create Budget Modal -->
     <div id="createBudgetModal"

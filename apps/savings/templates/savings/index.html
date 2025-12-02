@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Savings{% endblock %}
+
+{% block content %}
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Savings Goals</h1>
+            <p class="text-gray-500">Track your progress towards your dreams.</p>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button onclick="openDepositModal()"
+                class="bg-white text-gray-600 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition shadow-sm text-sm font-medium">
+                + Quick Deposit
+            </button>
+
+            <button onclick="openModal('add-goal-modal')"
+                class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition shadow-sm text-sm font-medium">
+                + Create New Goal
+            </button>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-takapi-green">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Saved</p>
+            <h2 class="text-2xl font-bold text-gray-800 mt-1">₱ {{ total_saved|floatformat:2 }}</h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-takapi-blue-dark">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Goals</p>
+            <h2 class="text-2xl font-bold text-gray-800 mt-1">{{ goals|length }} Goals</h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-takapi-blue-light">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Last Contribution</p>
+            {% if recent_savings %}
+                <h2 class="text-2xl font-bold text-gray-800 mt-1">+ ₱ {{ recent_savings.0.amount|floatformat:2 }}</h2>
+                <p class="text-xs text-gray-500">to {{ recent_savings.0.goal.name }}</p>
+            {% else %}
+                <h2 class="text-2xl font-bold text-gray-800 mt-1">--</h2>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 space-y-6">
+            <h3 class="text-lg font-bold text-takapi-blue-dark">Your Goals</h3>
+
+            {% if goals %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for goal in goals %}
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 truncate w-32" title="{{ goal.name }}">{{ goal.name }}</h3>
+                                <p class="text-xs text-gray-400">Target: {{ goal.target_date|date:"M Y" }}</p>
+                            </div>
+                            {% if goal.percent >= 100 %}
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold">Done!</span>
+                            {% else %}
+                                <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-bold">Active</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-2 flex justify-between text-sm">
+                            <span class="text-gray-500">Saved: <span class="text-gray-800 font-bold">₱{{ goal.current_amount|floatformat:0 }}</span></span>
+                            <span class="text-gray-500">Target: <span class="text-gray-800 font-bold">₱{{ goal.target_amount|floatformat:0 }}</span></span>
+                        </div>
+
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-6">
+                            <div class="h-3 rounded-full transition-all duration-500
+                                {% if goal.percent >= 100 %}bg-takapi-green{% else %}bg-takapi-blue-dark{% endif %}"
+                                style="width: {{ goal.percent }}%;">
+                            </div>
+                        </div>
+
+                        <div class="mt-auto flex justify-between items-center border-t border-gray-50 pt-4">
+                            <span class="text-xs text-gray-500 font-medium">{{ goal.percent|floatformat:0 }}%</span>
+
+                            <button onclick="openDepositModal('{{ goal.saving_goal_id }}')"
+                                class="text-sm text-takapi-blue-light font-bold hover:text-blue-800 transition">
+                                + Add Funds
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-white p-12 rounded-xl shadow-sm text-center border-2 border-dashed border-gray-200">
+                    <p class="text-gray-500 mb-4">You don't have any saving goals yet.</p>
+                    <button onclick="openModal('add-goal-modal')" class="text-takapi-blue-dark font-bold hover:underline">Create your first goal</button>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="space-y-6">
+            <h3 class="text-lg font-bold text-takapi-blue-dark">Recent Activity</h3>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="max-h-[600px] overflow-y-auto">
+                    <ul class="divide-y divide-gray-100">
+                        {% for saving in recent_savings %}
+                        <li class="p-4 hover:bg-gray-50 transition">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-sm font-bold text-gray-800">{{ saving.goal.name }}</p>
+                                    <p class="text-xs text-gray-500">{{ saving.date|date:"M d, Y" }}</p>
+                                </div>
+                                <span class="text-sm font-bold text-takapi-green">
+                                    + ₱{{ saving.amount|floatformat:0 }}
+                                </span>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li class="p-6 text-center text-sm text-gray-500">No recent deposits.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="bg-gray-50 p-3 text-center border-t border-gray-100">
+                    <a href="#" class="text-xs font-bold text-gray-500 hover:text-takapi-blue-dark uppercase tracking-wide">View Full History</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="add-goal-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 transform transition-transform duration-300 scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-takapi-blue-dark">Create New Goal</h3>
+                <button onclick="closeModal('add-goal-modal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form method="post" action="{% url 'savings:add_goal' %}">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Goal Name</label>
+                        <input name="goal_name" type="text" placeholder="e.g. Dream Vacation" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Target Amount</label>
+                        <input name="target_amount" type="number" step="0.01" placeholder="0.00" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Target Date</label>
+                        <input name="target_date" type="date" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-takapi-blue-dark text-white py-2 rounded-lg font-bold hover:bg-blue-800 transition">Start Saving</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="deposit-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-takapi-blue-dark">Add Funds</h3>
+                <button onclick="closeModal('deposit-modal')" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <form method="post" action="{% url 'savings:add_saving' %}">
+                {% csrf_token %}
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Select Goal</label>
+                        <select id="deposit-goal-select" name="goal_id" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none bg-white">
+                            {% for goal in goals %}
+                                <option value="{{ goal.saving_goal_id }}">{{ goal.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Amount to Deposit</label>
+                        <input name="amount" type="number" step="0.01" placeholder="0.00" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-6 bg-takapi-green text-white py-2 rounded-lg font-bold hover:bg-green-600 transition">Confirm Deposit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- MODAL LOGIC ---
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            const panel = modal.querySelector('.transform');
+            panel.classList.remove('scale-95');
+            panel.classList.add('scale-100');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const panel = modal.querySelector('.transform');
+            panel.classList.remove('scale-100');
+            panel.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 300);
+        }
+
+        // Handles opening the Deposit Modal
+        // If goalId is passed, it pre-selects that goal in the dropdown
+        function openDepositModal(goalId = null) {
+            if (goalId) {
+                const selector = document.getElementById('deposit-goal-select');
+                selector.value = goalId;
+            }
+            openModal('deposit-modal');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeModal(event.target.id);
+            }
+        }
+    </script>
+{% endblock %}

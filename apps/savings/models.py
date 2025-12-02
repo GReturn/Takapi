@@ -1,9 +1,6 @@
 from django.db import models
-
 from apps.user.models import User
 
-
-# Create your models here.
 
 class SavingGoal(models.Model):
     saving_goal_id = models.AutoField(primary_key=True)

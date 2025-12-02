@@ -1,25 +1,34 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
+
+from apps.reminder.models import Reminder
+from apps.user.models import User
 
 
-# Create your views here.
-class ReminderViewPage(View):
-    template_name = "view-reminder-tw.html"
-
-    def get(self, request):
-        return render(request, self.template_name)
-
-class CreateReminderPage(View):
-    template_name = "create-reminder-tw.html"
+@method_decorator(never_cache, name='dispatch')
+class ReminderIndexView(View):
+    template_name = 'reminder/index.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('user:login')
 
-class EditReminderPage(View):
-    template_name = "edit-reminder-tw.html"
+        user = User.objects.get(user_id=user_id)
+        reminders = Reminder.objects.filter(user=user)
 
-    def get(self, request):
-        return render(request, self.template_name)
+        context = {'user': user, 'reminders': reminders}
+
+        return render(request, 'index.html', context)
+
+
+class CreateReminderView(View):
+    def post(self, request):
+        # Logic to create reminder from POST data
+        # Combine date + time into datetime
+        # Save to DB
+        return redirect('reminder:index')
+
+# ... Edit and Delete views similarly ...

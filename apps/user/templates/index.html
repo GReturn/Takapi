@@ -47,8 +47,8 @@
                 <a href="#contact" class="text-gray-600 hover:text-takapi-blue-dark">Contact</a>
             </div>
             <div class="hidden md:flex items-center space-x-4">
-                <a href="/login/" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
-                <a href="{% url 'signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
+                <a href="{% url 'user:login' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
+                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
             </div>
             <!-- Mobile Menu Button -->
             <button class="md:hidden">

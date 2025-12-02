@@ -19,14 +19,14 @@
 
     <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="{% url 'index' %}" class="flex items-center space-x-2">
+            <a href="{% url 'user:index' %}" class="flex items-center space-x-2">
                 <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
                 <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
             </a>
             <div class="hidden md:flex items-center space-x-8">
-                <a href="{% url 'index' %}" class="text-gray-600 hover:text-takapi-blue-dark">Home</a>
-                <a href="{% url 'login' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
-                <a href="{% url 'signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
+                <a href="{% url 'user:index' %}" class="text-gray-600 hover:text-takapi-blue-dark">Home</a>
+                <a href="{% url 'user:login' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
+                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -60,8 +60,8 @@
                 <hr class="my-8 border-gray-200">
 
                 <div class="flex justify-between items-center">
-                    <a href="{% url 'index' %}" class="text-takapi-blue-dark font-semibold hover:underline">&larr; Back to Home</a>
-                    <a href="{% url 'terms' %}" class="text-gray-500 hover:text-takapi-blue-dark transition">View Terms of Service</a>
+                    <a href="{% url 'user:index' %}" class="text-takapi-blue-dark font-semibold hover:underline">&larr; Back to Home</a>
+                    <a href="{% url 'user:terms' %}" class="text-gray-500 hover:text-takapi-blue-dark transition">View Terms of Service</a>
                 </div>
             </div>
         </div>

@@ -51,7 +51,7 @@
 
                 <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
                 <p class="text-gray-500 mb-8">Fill in your details to get started.</p>
-                <form action="{% url 'signup' %}" method="POST">
+                <form action="{% url 'user:signup' %}" method="POST">
                     {% csrf_token %}
 
                     {% if msg %}
@@ -139,7 +139,7 @@
                     <div class="mb-6 flex items-center">
                         <input type="checkbox" id="terms" name="terms" class="h-4 w-4 text-takapi-blue-dark focus:ring-takapi-blue-light border-gray-300 rounded" required>
                         <label for="terms" class="ml-2 block text-sm text-gray-600">
-                            I agree to the <a href="{% url 'terms' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Terms of Service</a> and <a href="{% url 'privacy' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Privacy Policy</a>
+                            I agree to the <a href="{% url 'user:terms' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Terms of Service</a> and <a href="{% url 'user:privacy' %}" target="_blank" class="text-takapi-blue-dark hover:underline">Privacy Policy</a>
                         </label>
                     </div>
 
@@ -154,7 +154,7 @@
                 <!-- Log In Link -->
                 <p class="text-center text-gray-600 mt-8">
                     Already have an account?
-                    <a href="{% url 'login' %}" class="font-medium text-takapi-blue-dark hover:underline">Log in</a>
+                    <a href="{% url 'user:login' %}" class="font-medium text-takapi-blue-dark hover:underline">Log in</a>
                 </p>
 
             </div>
