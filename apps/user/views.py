@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.shortcuts import render, redirect, reverse
 from django.views import View
 from django.contrib import messages
+from django.views.generic import TemplateView
 
 from apps.user.models import Currency, User
 from apps.budget.models import Budget
@@ -123,7 +124,7 @@ class SignupView(View):
             })
 
 
-class ProfileView(View):
+class ProfileView(TemplateView):
     template_name = 'user-profile.html'
 
     def dispatch(self, request, *args, **kwargs):
