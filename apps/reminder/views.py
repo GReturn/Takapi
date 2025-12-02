@@ -2,31 +2,15 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from apps.reminder.models import Reminder
-
-# class ReminderViewPage(View):
-#     template_name = "view-reminder-tw.html"
-#
-#     def get(self, request):
-#         return render(request, self.template_name)
-#
-# class CreateReminderPage(View):
-#     template_name = "create-reminder-tw.html"
-#
-#     def get(self, request):
-#         return render(request, self.template_name)
-#
-# class EditReminderPage(View):
-#     template_name = "edit-reminder-tw.html"
-#
-#     def get(self, request):
-#         return render(request, self.template_name)
+from apps.user.models import User
 
 
 class ReminderIndexView(View):
     def get(self, request):
         # Fetch reminders for the logged-in user
-        user_id = request.session.get('user_id')
-        reminders = Reminder.objects.filter(user_id=user_id).order_by('date_time')
+        # user_id = request.session.get('user_id')
+        user = User.objects.get(user_id=request.session['user_id'])
+        reminders = Reminder.objects.filter(user_id=user.user_id).order_by('date_time')
 
         return render(request, 'index.html', {'reminders': reminders})
 
