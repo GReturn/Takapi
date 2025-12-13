@@ -34,7 +34,7 @@ class BudgetView(View):
 
         # Call the stored procedure
         with connection.cursor() as cursor:
-            cursor.callproc('get_budgets')
+            cursor.callproc('get_budgets', [user_id])
             budgets_from_proc = cursor.fetchall()
 
         context = {
@@ -43,3 +43,5 @@ class BudgetView(View):
         }
 
         return render(request, self.template_name, context)
+
+    # def post(self, request):
