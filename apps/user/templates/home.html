@@ -88,14 +88,23 @@
 
     <!-- Hero Section -->
     <header class="swoop-bg">
-        <div class="container mx-auto px-6 py-24 md:py-32 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-takapi-blue-dark leading-tight">Take Control of Your Savings.</h1>
-            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The smart, simple way for students to manage money, track expenses, and reach their financial goals. Start your journey to financial freedom today.</p>
-            <div class="mt-8">
-                <a href="{% url 'user:login' %}" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300">Get Started for Free</a>
-            </div>
+    <div class="container mx-auto px-6 py-24 md:py-32 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-takapi-blue-dark leading-tight">Take Control of Your Savings.</h1>
+        <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The smart, simple way for students to manage money, track expenses, and reach their financial goals. Start your journey to financial freedom today.</p>
+
+        <div class="mt-8">
+            {% if user %}
+                <a href="{% url 'user:dashboard' %}" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Go to Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Get Started for Free
+                </a>
+            {% endif %}
         </div>
-    </header>
+    </div>
+</header>
 
     <!-- Features Section -->
     <section id="features" class="py-20 bg-gray-50">
