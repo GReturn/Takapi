@@ -15,25 +15,67 @@ from apps.savings.models import Saving, SavingGoal
 from apps.reminder.models import Reminder
 
 
+@method_decorator(never_cache, name='dispatch')
 class IndexView(View):
     template_name = 'home.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        current_user = None
+
+        if user_id:
+            try:
+                current_user = User.objects.get(user_id=user_id)
+            except User.DoesNotExist:
+                request.session.flush() # case: user deleted and we are redirected to the dashboard
+
+        context = {
+            'user': current_user
+        }
+
+        return render(request, self.template_name, context)
 
 
+@method_decorator(never_cache, name='dispatch')
 class PrivacyView(View):
     template_name = 'privacy.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        current_user = None
+
+        if user_id:
+            try:
+                current_user = User.objects.get(user_id=user_id)
+            except User.DoesNotExist:
+                request.session.flush()  # case: user deleted and we are redirected to the dashboard
+
+        context = {
+            'user': current_user
+        }
+
+        return render(request, self.template_name, context)
 
 
+@method_decorator(never_cache, name='dispatch')
 class TermsView(View):
     template_name = 'terms.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        current_user = None
+
+        if user_id:
+            try:
+                current_user = User.objects.get(user_id=user_id)
+            except User.DoesNotExist:
+                request.session.flush()  # case: user deleted and we are redirected to the dashboard
+
+        context = {
+            'user': current_user
+        }
+
+        return render(request, self.template_name, context)
 
 
 class LogoutView(View):

@@ -19,15 +19,39 @@
 
     <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
+
             <a href="{% url 'user:index' %}" class="flex items-center space-x-2">
                 <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
                 <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
             </a>
+
             <div class="hidden md:flex items-center space-x-8">
-                <a href="{% url 'user:index' %}" class="text-gray-600 hover:text-takapi-blue-dark">Home</a>
-                <a href="{% url 'user:login' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
-                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
+                <a href="{% url 'user:index' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Home</a>
+
+                {% if user %}
+                    <div class="flex items-center space-x-6">
+                        <a href="{% url 'user:dashboard' %}" class="text-takapi-blue-dark font-medium hover:underline transition">
+                            Go to Dashboard
+                        </a>
+
+                        <div class="flex items-center space-x-3 pl-6 border-l border-gray-200">
+                            <span class="text-gray-700 font-medium">
+                                {{ user.first_name|default:"User" }}
+                            </span>
+                            <div class="h-9 w-9 rounded-full bg-takapi-blue-dark text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                                {{ user.first_name|slice:":1"|default:"U" }}
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <a href="{% url 'user:login' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
+                    <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
+                        Sign Up
+                    </a>
+                {% endif %}
             </div>
+
         </div>
     </nav>
 
