@@ -142,7 +142,7 @@ class ProfileView(TemplateView):
             context['user'] = current_user
             context['currencies'] = Currency.objects.all()
         except User.DoesNotExist:
-            pass # If user ID is invalid, flush session in the next step (logic handled in dispatch usually)
+            pass
 
         return context
 
@@ -156,46 +156,59 @@ class ProfileView(TemplateView):
 
         action = request.POST.get('action')
 
-        if action == 'update_info':
-            user.first_name = request.POST.get('first_name')
-            user.last_name = request.POST.get('last_name')
-            user.email = request.POST.get('email')
-            user.save()
-            messages.success(request, 'Info updated successfully.')
+        try:
+            with connection.cursor() as cursor:
 
-        elif action == 'update_preferences':
-            user.age = request.POST.get('age')
-            user.gender = request.POST.get('gender')
+                if action == 'update_info':
+                    cursor.callproc('update_user_info', [
+                        user_id,
+                        request.POST.get('first_name'),
+                        request.POST.get('last_name'),
+                        request.POST.get('email')
+                    ])
+                    messages.success(request, 'Info updated successfully.')
 
-            currency_id = request.POST.get('currency')
-            if currency_id:
-                try:
-                    user.currency = Currency.objects.get(pk=currency_id)
-                except Currency.DoesNotExist:
-                    messages.error(request, 'Invalid currency selected.')
+                elif action == 'update_preferences':
+                    user.age = request.POST.get('age')
+                    user.gender = request.POST.get('gender')
 
-            user.save()
-            messages.success(request, 'Preferences updated successfully.')
+                    currency_id = request.POST.get('currency')
+                    if not currency_id:
+                        messages.error(request, 'Please select a currency.')
+                    else:
+                        cursor.callproc('update_user_preferences', [
+                            user_id,
+                            request.POST.get('age'),
+                            request.POST.get('gender'),
+                            currency_id
+                        ])
+                        messages.success(request, 'Preferences updated successfully.')
 
-        elif action == 'change_password':
-            current_password = request.POST.get('password')
-            new_password = request.POST.get('new_password1')
-            new_password_confirmation = request.POST.get('new_password2')
+                elif action == 'change_password':
+                    current_password = request.POST.get('current_password')
+                    new_password = request.POST.get('new_password1')
+                    new_password_confirmation = request.POST.get('new_password2')
 
-            if not check_password(current_password, user.password):
-                messages.error(request, 'Incorrect current password.')
-            elif new_password != new_password_confirmation:
-                messages.error(request, 'Passwords do not match.')
-            else:
-                user.password = make_password(new_password)
-                user.save()
-                messages.success(request, 'Password updated successfully.')
+                    if not check_password(current_password, user.password):
+                        messages.error(request, 'Incorrect current password.')
+                    elif new_password != new_password_confirmation:
+                        messages.error(request, 'Passwords do not match.')
+                    else:
+                        hashed_password = make_password(new_password)
+                        cursor.callproc('update_user_password', [
+                            user_id,
+                            hashed_password
+                        ])
+                        messages.success(request, 'Password updated successfully.')
 
-        elif action == 'delete_account':
-            user.delete()
-            request.session.flush()
-            messages.success(request, 'Account deleted successfully.')
-            return redirect('login')
+                elif action == 'delete_account':
+                    cursor.callproc('delete_user', [user_id])
+                    request.session.flush()
+                    messages.success(request, 'Account deleted successfully.')
+                    return redirect('user:login')
+
+        except Exception as e:
+            messages.error(request, f'Error occurred: {str(e)}')
 
         return redirect('user:profile')
 
