@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import check_password, make_password
+from django.db import connection, DatabaseError
 from django.db.models import Sum
 from django.shortcuts import render, redirect, reverse
 from django.utils.decorators import method_decorator
@@ -92,32 +93,29 @@ class SignupView(View):
                 'currencies': currencies
             })
 
-        if User.objects.filter(email=email).exists():
-            return render(request, self.template_name, {
-                'msg': 'Email already registered',
-                'currencies': currencies
-            })
-
         try:
-            currency_instance = Currency.objects.get(currency_id=currency_id)
+            hashed_password = make_password(password)
 
-            user = User(
-                first_name=first_name,
-                last_name=last_name,
-                email=email,
-                age=age,
-                gender=gender,
-                currency=currency_instance,
-                password=make_password(password)
-            )
-            user.save()
+            with connection.cursor() as cursor:
+                cursor.callproc('create_user', [
+                    first_name,
+                    last_name,
+                    email,
+                    age,
+                    gender,
+                    currency_id,
+                    hashed_password
+                ])
+                result = cursor.fetchall()
+                if result[0][0] != 'User successfully registered':
+                    err_msg = result[0][0]
+
+                    return render(request, self.template_name, {
+                        'msg': err_msg,
+                        'currencies': currencies
+                    })
             return redirect('user:login')
 
-        except Currency.DoesNotExist:
-            return render(request, self.template_name, {
-                'msg': 'Invalid Currency Selected',
-                'currencies': currencies
-            })
 
         except Exception as e:
             return render(request, self.template_name, {
