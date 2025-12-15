@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import check_password, make_password
-from django.db import connection, DatabaseError
+from django.db import connection
 from django.db.models import Sum
+from django.middleware.csrf import rotate_token
 from django.shortcuts import render, redirect, reverse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -100,6 +101,7 @@ class LoginView(View):
             user = User.objects.get(email=email)
 
             if check_password(password, user.password):
+                rotate_token(request) # rotating token prevents session fixation (fixes occasional 403 forbidden)
                 request.session['user_id'] = user.user_id
                 request.session.set_expiry(0)
                 return redirect('user:dashboard')
@@ -206,22 +208,19 @@ class ProfileView(TemplateView):
                         user_id,
                         request.POST.get('first_name'),
                         request.POST.get('last_name'),
-                        request.POST.get('email')
+                        request.POST.get('email'),
+                        request.POST.get('age'),
+                        request.POST.get('gender')
                     ])
                     messages.success(request, 'Info updated successfully.')
 
                 elif action == 'update_preferences':
-                    user.age = request.POST.get('age')
-                    user.gender = request.POST.get('gender')
-
                     currency_id = request.POST.get('currency')
                     if not currency_id:
                         messages.error(request, 'Please select a currency.')
                     else:
                         cursor.callproc('update_user_preferences', [
                             user_id,
-                            request.POST.get('age'),
-                            request.POST.get('gender'),
                             currency_id
                         ])
                         messages.success(request, 'Preferences updated successfully.')
