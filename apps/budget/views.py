@@ -102,8 +102,22 @@ class EditBudgetView(View):
         amount = request.POST.get('edit_amount')
         period_days = request.POST.get('edit_period_days')
 
+        # 1. Capture the selected category IDs for editing
+        # Note: We use a different name 'edit_expense_categories' to distinguish from the create form
+        category_ids = request.POST.getlist('edit_expense_categories')
+
+        # 2. Update main fields using Stored Procedure
         with connection.cursor() as cursor:
             cursor.callproc('edit_budget', [budget_id, name, amount, period_days, user_id])
+
+        # 3. Update Categories using Django ORM
+        # We fetch the budget object and use .set() which automatically handles
+        # clearing old categories and adding the new ones.
+        try:
+            budget = Budget.objects.get(budget_id=budget_id)
+            budget.category.set(category_ids)
+        except Budget.DoesNotExist:
+            pass
 
         return redirect('budget:index')
 
@@ -114,6 +128,17 @@ class DeleteBudgetHardView(View):
         if not user_id:
             return redirect('user:login')
 
+        # 1. CLEANUP: Remove the Category links first (Django ORM)
+        # This deletes the rows in the hidden "budget_budget_category" table
+        # so the Foreign Key constraint doesn't block the SP.
+        try:
+            budget = Budget.objects.get(budget_id=budget_id)
+            budget.category.clear()  # Removes all M2M associations
+        except Budget.DoesNotExist:
+            # If the budget doesn't exist, we can just proceed or return
+            pass
+
+        # 2. DELETE: Remove the Budget record (Stored Procedure)
         with connection.cursor() as cursor:
             cursor.callproc('delete_budget', [budget_id, user_id])
 
