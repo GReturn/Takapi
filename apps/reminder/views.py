@@ -45,6 +45,15 @@ class CreateReminderView(View):
         print(message)
         return redirect('reminder:index')
 
+# ... Edit and Delete views similarly ...
+
+class DeleteReminderView(View):
+    def post(self, request, reminder_id):
+        user_id = request.session["user_id"]
+        with connection.cursor() as cursor:
+            cursor.callproc("delete_reminder", [reminder_id, user_id])
+
+        return redirect('reminder:index')
 
 
 
