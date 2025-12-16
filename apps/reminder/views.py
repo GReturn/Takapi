@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.db import connection
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -27,8 +30,24 @@ class ReminderIndexView(View):
 class CreateReminderView(View):
     def post(self, request):
         # Logic to create reminder from POST data
+        message = request.POST['message']
+        description = request.POST['description']
         # Combine date + time into datetime
+        date_time = datetime.strptime(f'{request.POST['date']} {request.POST['time']}', "%Y-%m-%d %H:%M")
+        #session info
+        user_id = request.session['user_id']
+        p_out_message = ""
         # Save to DB
+        with connection.cursor() as cursor:
+            cursor.callproc("create_reminder", [user_id, message, date_time, description, p_out_message])
+            cursor.execute("SELECT @_create_reminder_4;")
+            message = cursor.fetchone()[0]
+        print(message)
         return redirect('reminder:index')
 
-# ... Edit and Delete views similarly ...
+
+
+
+
+
+
