@@ -13,9 +13,11 @@ class ExpenseCategory(models.Model):
 class Expense(models.Model):
     expense_id = models.AutoField(primary_key=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
+    date = models.DateField(auto_now_add=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(ExpenseCategory, on_delete=models.RESTRICT)
+    description = models.CharField(max_length=255, default="")
 
     # Example: 1200.00 - Food
     def __str__(self):
