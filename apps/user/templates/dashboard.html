@@ -91,7 +91,7 @@
                         <thead>
                             <tr class="text-xs text-gray-500 border-b border-gray-100">
                                 <th class="font-medium py-3">Category</th>
-                                <th class="font-medium py-3">Date</th> <!-- NOTE: Expense Model has no Date field -->
+                                <th class="font-medium py-3">Date</th>
                                 <th class="font-medium py-3 text-right">Amount</th>
                             </tr>
                         </thead>
@@ -103,8 +103,7 @@
                                     {{ expense.category.name }}
                                 </td>
                                 <td class="py-3 text-gray-500">
-                                    <!-- Placeholder because model lacks date field -->
-                                    <span class="text-xs text-gray-400">N/A</span>
+                                    {{ expense.date }}
                                 </td>
                                 <td class="py-3 text-right font-medium text-gray-800">
                                     - {{ expense.amount|floatformat:2 }}
