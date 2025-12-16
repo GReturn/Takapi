@@ -29,15 +29,11 @@ class ReminderIndexView(View):
 
 class CreateReminderView(View):
     def post(self, request):
-        # Logic to create reminder from POST data
         message = request.POST['message']
         description = request.POST['description']
-        # Combine date + time into datetime
         date_time = datetime.strptime(f'{request.POST['date']} {request.POST['time']}', "%Y-%m-%d %H:%M")
-        #session info
         user_id = request.session['user_id']
         p_out_message = ""
-        # Save to DB
         with connection.cursor() as cursor:
             cursor.callproc("create_reminder", [user_id, message, date_time, description, p_out_message])
             cursor.execute("SELECT @_create_reminder_4;")
@@ -45,14 +41,26 @@ class CreateReminderView(View):
         print(message)
         return redirect('reminder:index')
 
-# ... Edit and Delete views similarly ...
-
 class DeleteReminderView(View):
     def post(self, request, reminder_id):
         user_id = request.session["user_id"]
         with connection.cursor() as cursor:
             cursor.callproc("delete_reminder", [reminder_id, user_id])
 
+        return redirect('reminder:index')
+
+class EditReminderView(View):
+    def post(self, request, reminder_id):
+        message = request.POST['message']
+        description = request.POST['description']
+        date_time = datetime.strptime(f'{request.POST['date']} {request.POST['time']}', "%Y-%m-%d %H:%M")
+        user_id = request.session["user_id"]
+        p_out_msg = ""
+        with connection.cursor() as cursor:
+            cursor.callproc("update_reminder", [reminder_id, user_id, message, date_time, description, p_out_msg])
+            cursor.execute("SELECT @_update_reminder_5;")
+            message = cursor.fetchone()[0]
+        print(message)
         return redirect('reminder:index')
 
 
