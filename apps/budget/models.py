@@ -1,5 +1,6 @@
 from django.db import models
 
+from apps.expense.models import ExpenseCategory
 from apps.user.models import User
 
 
@@ -10,6 +11,7 @@ class Budget(models.Model):
     name = models.CharField(max_length=100)
     budget_period = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    category = models.ManyToManyField(ExpenseCategory, blank=True, related_name='budgets')
 
     def __str__(self):
         return self.name

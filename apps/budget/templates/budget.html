@@ -36,7 +36,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         <!-- Budget List (Left Side - Takes 2 columns) -->
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-3">
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
                 <!-- Card Header -->
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
@@ -56,6 +56,9 @@
                                 Budget Name
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Categories
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Amount
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -64,52 +67,37 @@
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Progress
                             </th>
-                            <th class="px -6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Remaining
-                            </th>
                             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
                         </thead>
-                        {% comment %}<tbody class="divide-y divide-gray-200">
-                        <!-- Sample Data for non stored procedure-->
-                        <tr class="hover:bg-gray-50 transition duration-150">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Monthly
-                                Groceries
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">₱5,000.00</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <div class="flex items-center">
-                                    <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
-                                        <div class="bg-takapi-green h-2 rounded-full" style="width: 45%"></div>
-                                    </div>
-                                    <span class="text-gray-600">45%</span>
-                                </div>
-                            </td>
-                            <td class="px-2 py-4 whitespace-nowrap text-sm font-semibold text-takapi-green">
-                                ₱2,750.00
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                <button onclick="openEditModal()"
-                                        class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit
-                                </button>
-                                <button onclick="openDeleteModal()"
-                                        class="text-red-600 hover:text-red-700 font-medium">Delete
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>{% endcomment %}
                         <tbody class="divide-y divide-gray-200">
                         {% for budget in budgets %}
                             <tr class="hover:bg-gray-50 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ budget.2 }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ budget.name }}
+                                </td>
+
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for cat in budget.categories %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ cat.name }}
+                            </span>
+                                        {% empty %}
+                                            <span class="text-gray-400 italic text-xs">No Category</span>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    ₱{{ budget.1|floatformat:2 }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ budget.3 }}</td>
+                                    ₱{{ budget.amount|floatformat:2 }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {{ budget.period }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <!-- Placeholder for Progress -->
                                     <div class="flex items-center">
                                         <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
                                             <div class="bg-takapi-green h-2 rounded-full" style="width: 0%"></div>
@@ -117,15 +105,11 @@
                                         <span class="text-gray-600">0%</span>
                                     </div>
                                 </td>
-                                <td class="px-2 py-4 whitespace-nowrap text-sm font-semibold text-takapi-green">
-                                    <!-- Placeholder for Remaining Amount -->
-                                    ₱{{ budget.1|floatformat:2 }}
-                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    <button onclick="openEditModal({{ budget.0 }})"
+                                    <button onclick="openEditModal({{ budget.id }})"
                                             class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit
                                     </button>
-                                    <button onclick="openDeleteModal({{ budget.0 }})"
+                                    <button onclick="openDeleteModal({{ budget.id }})"
                                             class="text-red-600 hover:text-red-700 font-medium">Delete
                                     </button>
                                 </td>
@@ -144,7 +128,7 @@
         </div>
 
         <!-- Budget Tips Sidebar (Right Side) -->
-        <div class="lg:col-span-1">
+        <div class="lg:col-span-0">
             <div class="bg-white rounded-xl shadow-md p-6 mb-6">
                 <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">💡 Budget Tips</h2>
                 <ul class="space-y-4">
@@ -234,6 +218,24 @@
                             <input type="number" name="budget_period_days" required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent mt-1.5">
                         </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Expense Categories</label>
+                        <div class="mt-1.5 p-3 border border-gray-300 rounded-lg bg-white max-h-48 overflow-y-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                {% for category in categories %}
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox"
+                                               name="expense_categories"
+                                               value="{{ category.category_id }}"
+                                               class="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500">
+                                        <span class="text-gray-700">{{ category.name }}</span>
+                                    </label>
+                                {% empty %}
+                                    <p class="text-sm text-gray-500 col-span-2">No categories found.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                     <div class="flex space-x-3 pt-4">
                         <button type="submit"
