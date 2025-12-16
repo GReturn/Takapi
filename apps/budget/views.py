@@ -76,3 +76,15 @@ class EditBudgetView(View):
             cursor.callproc('edit_budget', [budget_id, name, amount, period_days, user_id])
 
         return redirect('budget:index')
+
+
+class DeleteBudgetHardView(View):
+    def post(self, request, budget_id):
+        user_id = request.session.get('user_id')
+        if not user_id:
+            return redirect('user:login')
+
+        with connection.cursor() as cursor:
+            cursor.callproc('delete_budget', [budget_id, user_id])
+
+        return redirect('budget:index')
