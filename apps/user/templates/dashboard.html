@@ -91,6 +91,7 @@
                         <thead>
                             <tr class="text-xs text-gray-500 border-b border-gray-100">
                                 <th class="font-medium py-3">Category</th>
+                                <th class="font-medium py-3">Description</th>
                                 <th class="font-medium py-3">Date</th>
                                 <th class="font-medium py-3 text-right">Amount</th>
                             </tr>
@@ -99,8 +100,10 @@
                             {% for expense in recent_expenses %}
                             <tr class="group hover:bg-gray-50 transition">
                                 <td class="py-3 flex items-center">
-                                    <span class="h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
                                     {{ expense.category.name }}
+                                </td>
+                                <td class="py-3 text-gray-500 max-w-xs truncate">
+                                    {{ expense.description }}
                                 </td>
                                 <td class="py-3 text-gray-500">
                                     {{ expense.date }}
