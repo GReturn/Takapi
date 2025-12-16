@@ -35,14 +35,24 @@ class BudgetView(View):
         except User.DoesNotExist:
             return redirect('user:login')
 
-        # Call the stored procedure
         with connection.cursor() as cursor:
             cursor.callproc('get_budgets', [user_id])
             budgets_from_proc = cursor.fetchall()
 
+        total_budget = sum((row[1] or 0) for row in budgets_from_proc)
+        active_budgets = len(budgets_from_proc)
+
+        # Attempt to compute utilization if a 'spent' column exists (e.g. index 4)
+        # utilization_percent = 0
+        # if total_budget > 0 and any(len(r) > 4 and r[4] is not None for r in budgets_from_proc):
+        #     spent_sum = sum((r[4] or 0) for r in budgets_from_proc if len(r) > 4)
+        #     utilization_percent = int((spent_sum / total_budget) * 100)
+
         context = {
             'budgets': budgets_from_proc,
-            'user': user
+            'total_budget': total_budget,
+            'active_budgets': active_budgets,
+            # 'utilization_percent': utilization_percent,
         }
 
         return render(request, self.template_name, context)

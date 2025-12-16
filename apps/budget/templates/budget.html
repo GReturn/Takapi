@@ -20,11 +20,11 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-dark">
             <h3 class="text-gray-600 text-sm font-medium mb-2">Total Budget</h3>
-            <div class="text-3xl font-bold text-takapi-blue-dark">₱0.00</div>
+            <div class="text-3xl font-bold text-takapi-blue-dark">₱{{ total_budget | floatformat:2 }}</div>
         </div>
         <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-green">
             <h3 class="text-gray-600 text-sm font-medium mb-2">Active Budgets</h3>
-            <div class="text-3xl font-bold text-takapi-green">0</div>
+            <div class="text-3xl font-bold text-takapi-green">{{ active_budgets }}</div>
         </div>
         <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-light">
             <h3 class="text-gray-600 text-sm font-medium mb-2">Budget Utilization</h3>
