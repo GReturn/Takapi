@@ -259,7 +259,6 @@ class DashboardView(View):
     template_name = 'dashboard.html'
 
     def get(self, request):
-        # 1. Security: Ensure user is logged in via your custom session
         user_id = request.session.get('user_id')
         if not user_id:
             return redirect('user:login')
@@ -297,23 +296,18 @@ class DashboardView(View):
         goals = SavingGoal.objects.filter(user=user)
         goals_data = []
         for goal in goals:
-            # How much saved for THIS specific goal?
             saved_amount = Saving.objects.filter(user=user, goal=goal).aggregate(Sum('amount'))['amount__sum'] or 0
-
-            # Percentage
             percent = (saved_amount / goal.target_amount * 100) if goal.target_amount > 0 else 0
-
             goals_data.append({
                 'name': goal.name,
                 'current': saved_amount,
                 'target': goal.target_amount,
-                'percent': min(percent, 100),  # Cap at 100% for CSS width
+                'percent': min(percent, 100),
                 'target_date': goal.target_date
             })
 
         # E. Recent Expenses (Last 10)
         recent_expenses = Expense.objects.filter(user=user).select_related('category').order_by('-expense_id')[:10]
-
         # F. Reminders List (Next 3 pending)
         upcoming_reminders = Reminder.objects.filter(user=user).exclude(status=True).order_by('date_time')[:3]
 
@@ -330,5 +324,5 @@ class DashboardView(View):
             'recent_expenses': recent_expenses,
             'upcoming_reminders': upcoming_reminders,
         }
-
         return render(request, self.template_name, context)
+
