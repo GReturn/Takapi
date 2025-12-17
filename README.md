@@ -178,7 +178,7 @@ erDiagram
     
     SAVING_GOAL ||--o{ SAVING : "belongs to"
     EXPENSE_CATEGORY ||--|{ EXPENSE : "belongs to"
-    BUDGET }|--|{ EXPENSE_CATEGORY
+    BUDGET }|--|{ EXPENSE_CATEGORY : ""
 ```
 
 ---
