@@ -8,4 +8,5 @@ urlpatterns = [
     path('create', views.CreateReminderView.as_view(), name="create"),
     path('delete/<int:reminder_id>', views.DeleteReminderView.as_view(), name='delete'),
     path('edit/<int:reminder_id>', views.EditReminderView.as_view(), name='edit'),
+    path('complete/<int:reminder_id>', views.CompleteReminderView.as_view(), name='complete'),
 ]
