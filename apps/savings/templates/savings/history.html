@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% block title %}Saving History{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        <dialog id="message-dialog">
+            <div style="padding: 20px; min-width: 300px; text-align: center;">
+                <h3 style="margin-top: 0;">Notice</h3>
+
+                {% for message in messages %}
+                    <p style="color: #333; font-size: 1.1em;">{{ message }}</p>
+                {% endfor %}
+
+                <form method="dialog">
+                    <button style="padding: 8px 20px; cursor: pointer; background: #333; color: white; border: none; border-radius: 4px;">
+                        OK
+                    </button>
+                </form>
+            </div>
+        </dialog>
+
+        <script>
+            // Automatically open the dialog when the page loads
+            const dialog = document.getElementById('message-dialog');
+            if (dialog) {
+                dialog.showModal();
+            }
+        </script>
+
+        <style>
+            dialog::backdrop {
+                background: rgba(0, 0, 0, 0.5);
+            }
+            dialog {
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+        </style>
+    {% endif %}
+<div class="flex justify-between items-center mb-6">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-800">Saving History</h1>
+        <p class="text-gray-500">View and filter all your deposits.</p>
+    </div>
+</div>
+
+<div class="flex flex-col lg:flex-row justify-between gap-6 mb-6">
+
+    <form method="get" class="flex flex-wrap gap-3 items-center bg-white p-4 rounded-xl shadow">
+
+        <select name="goal_id" class="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none bg-white">
+            <option value="">All Goals</option>
+            {% for g in goals %}
+                <option value="{{ g.0 }}"
+                    {% if selected_goal == g.0|stringformat:"s" %}selected{% endif %}>
+                    {{ g.1 }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="sort_field" class="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none bg-white">
+            <option value="date" {% if sort_field == 'date' %}selected{% endif %}>Sort by Date</option>
+            <option value="amount" {% if sort_field == 'amount' %}selected{% endif %}>Sort by Amount</option>
+        </select>
+
+        <select name="sort_order" class="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none bg-white">
+            <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+            <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+        </select>
+
+        <button type="submit"
+            class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition font-medium">
+            Apply
+        </button>
+    </form>
+
+    <div class="bg-white p-4 rounded-xl shadow flex items-center justify-center min-w-[200px] border-l-4 border-takapi-green">
+        <div class="text-center">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Saved</p>
+            <p class="text-2xl font-bold text-gray-800">
+                ₱ {{ total_saved|floatformat:2 }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl shadow overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Goal</th>
+                <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase">Amount</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody class="divide-y divide-gray-100">
+            {% for s in savings %}
+            <tr class="hover:bg-gray-50 transition">
+                <td class="px-6 py-4 font-medium text-gray-700">
+                    {{ s.3 }}
+                </td>
+                <td class="px-6 py-4 text-right font-bold text-takapi-green">
+                    ₱ {{ s.1|floatformat:2 }}
+                </td>
+                <td class="px-6 py-4 text-gray-500">
+                    {{ s.2|date:"M d, Y" }}
+                </td>
+
+                <td class="px-6 py-4 text-right space-x-2">
+                    <button onclick="openEditSavingModal('{{ s.0 }}', '{{ s.1 }}', '{{ s.2|date:'Y-m-d' }}')"
+                            class="text-gray-400 hover:text-blue-600 transition" title="Edit">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </button>
+
+                    <button onclick="openDeleteSavingModal('{{ s.0 }}', '{{ s.3 }}', '{{ s.1 }}')"
+                            class="text-gray-400 hover:text-red-600 transition" title="Delete">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="px-6 py-6 text-center text-gray-400">
+                    No saving records found.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div id="edit-saving-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95">
+        <div class="flex justify-between items-center border-b pb-3 mb-4">
+            <h3 class="text-xl font-bold text-takapi-blue-dark">Edit Transaction</h3>
+            <button onclick="closeModal('edit-saving-modal')" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <form method="post" action="{% url 'savings:edit_saving' %}">
+            {% csrf_token %}
+            <input type="hidden" name="saving_id" id="edit-saving-id">
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Amount</label>
+                    <input name="amount" id="edit-saving-amount" type="number" step="0.01" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Date</label>
+                    <input name="date" id="edit-saving-date" type="date" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-light outline-none">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" onclick="closeModal('edit-saving-modal')" class="px-4 py-2 border rounded-lg text-sm text-gray-600">Cancel</button>
+                <button type="submit" class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-800 transition">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="delete-saving-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 transform transition-transform duration-300 scale-95">
+        <h3 class="text-lg font-bold text-red-600 mb-2">Delete Transaction</h3>
+        <p class="text-gray-600 text-sm mb-6" id="delete-msg">Are you sure you want to delete this?</p>
+
+        <form method="post" action="{% url 'savings:delete_saving' %}">
+            {% csrf_token %}
+            <input type="hidden" name="saving_id" id="delete-saving-id">
+
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="closeModal('delete-saving-modal')" class="px-4 py-2 border rounded-lg text-sm">Cancel</button>
+                <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        const panel = modal.querySelector('.transform');
+        panel.classList.remove('scale-95');
+        panel.classList.add('scale-100');
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const panel = modal.querySelector('.transform');
+        panel.classList.remove('scale-100');
+        panel.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+    }
+    function openEditSavingModal(id, amount, date) {
+        document.getElementById('edit-saving-id').value = id;
+        document.getElementById('edit-saving-amount').value = amount;
+        document.getElementById('edit-saving-date').value = date;
+        openModal('edit-saving-modal');
+    }
+
+    function openDeleteSavingModal(id, goalName, amount) {
+        document.getElementById('delete-saving-id').value = id;
+        document.getElementById('delete-msg').innerText = `Are you sure you want to delete the deposit of ₱${amount} for "${goalName}"?`;
+        openModal('delete-saving-modal');
+    }
+</script>
+
+{% endblock %}
