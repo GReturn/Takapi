@@ -289,7 +289,7 @@ class DashboardView(View):
         budget_percent = (total_expenses / total_budget * 100) if total_budget > 0 else 0
 
         # C. Pending Reminders Count
-        pending_reminders_count = Reminder.objects.filter(user=user, status=False).count()
+        pending_reminders_count = Reminder.objects.filter(user=user).exclude(status=True).count()
 
         # --- LISTS & COMPLEX DATA ---
 
