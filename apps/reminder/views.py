@@ -16,28 +16,60 @@ class ReminderIndexView(View):
     template_name = 'index.html'
 
     def get(self, request):
-        user_id = request.session.get('user_id')
-        if not user_id:
-            return redirect('user:login')
+        try:
+            user_id = request.session.get('user_id')
+            if not user_id:
+                return redirect('user:login')
 
-        with connection.cursor() as cursor:
-            cursor.callproc("update_reminder_status", [user_id])
+            with connection.cursor() as cursor:
+                cursor.callproc("update_reminder_status", [user_id])
 
-        user = User.objects.get(user_id=user_id)
-        reminders = Reminder.objects.filter(user=user)
+            user = User.objects.get(user_id=user_id)
+            reminders = Reminder.objects.filter(user=user)
 
-        context = {'user': user, 'reminders': reminders}
+            context = {'user': user, 'reminders': reminders}
+            return render(request, self.template_name, context)
+        except Exception as e:
+            messages.error(request, f'An error occurred: {e}')
 
-        return render(request, self.template_name, context)
+        return render(request, self.template_name)
+
+
+    def post(self, request):
+        try:
+            user_id = request.session.get('user_id')
+            filter_option = request.POST.get('filter-options')
+            if not user_id:
+                return redirect('user:login')
+
+            with connection.cursor() as cursor:
+                cursor.callproc("update_reminder_status", [user_id])
+
+            user = User.objects.get(user_id=user_id)
+            if filter_option == "None":
+                reminders = Reminder.objects.filter(user=user)
+                context = {'user': user, 'reminders': reminders}
+            else:
+                filters=["Pending", "Completed", "Overdue"]
+                filter_equivalence=[None, True, False]
+
+                status_filter = filter_equivalence[filters.index(filter_option)]
+                reminders = Reminder.objects.filter(user=user, status=status_filter)
+                context = {'user': user, 'reminders': reminders, 'filters':filter_option}
+            return render(request, self.template_name, context)
+        except Exception as e:
+            messages.error(request, f'An error occurred: {e}')
+
+        return render(request, self.template_name)
 
 
 class CreateReminderView(View):
     def post(self, request):
         try:
-            message = request.POST['message']
-            description = request.POST['description']
-            date_time = datetime.strptime(f"{request.POST['date']} {request.POST['time']}", "%Y-%m-%d %H:%M")
-            user_id = request.session['user_id']
+            message = request.POST.get('message')
+            description = request.POST.get('description')
+            date_time = datetime.strptime(f"{request.POST.get('date')} {request.POST.get('time')}", "%Y-%m-%d %H:%M")
+            user_id = request.session.get('user_id')
             if not user_id:
                 return redirect('user:login')
             p_out_message = ""
@@ -51,14 +83,14 @@ class CreateReminderView(View):
             else:
                 messages.error(request, message)
         except Exception as e:
-            messages.error(request, f'An error occured when creating the reminder: {e}')
+            messages.error(request, f'An error occurred when creating the reminder: {e}')
         
         return redirect('reminder:index')
 
 class DeleteReminderView(View):
     def post(self, request, reminder_id):
         try:
-            user_id = request.session["user_id"]
+            user_id = request.session.get("user_id")
             if not user_id:
                 return redirect('user:login')
             p_out_message = ""
@@ -78,10 +110,10 @@ class DeleteReminderView(View):
 class EditReminderView(View):
     def post(self, request, reminder_id):
         try:
-            message = request.POST['message']
-            description = request.POST['description']
-            date_time = datetime.strptime(f"{request.POST['date']} {request.POST['time']}", "%Y-%m-%d %H:%M")
-            user_id = request.session["user_id"]
+            message = request.POST.get('message')
+            description = request.POST.get('description')
+            date_time = datetime.strptime(f"{request.POST.get('date')} {request.POST.get('time')}", "%Y-%m-%d %H:%M")
+            user_id = request.session.get('user_id')
             if not user_id:
                 return redirect('user:login')
             p_out_msg = ""
@@ -94,13 +126,13 @@ class EditReminderView(View):
             else:
                 messages.error(request, message)
         except Exception as e:
-            messages.error(request, f'An error occurred when deleting the reminder: {e}')
+            messages.error(request, f'An error occurred when updating the reminder: {e}')
         return redirect('reminder:index')
 
 class CompleteReminderView(View):
     def post(self, request, reminder_id):
         try:
-            user_id = request.session["user_id"]
+            user_id = request.session.get("user_id")
             if not user_id:
                 return redirect('user:login')
             p_out_msg = ""
@@ -113,7 +145,7 @@ class CompleteReminderView(View):
             else:
                 messages.error(request, message)
         except Exception as e:
-            messages.error(request, f'An error occurred when deleting the reminder: {e}')
+            messages.error(request, f'An error occurred when completing the reminder: {e}')
         return redirect('reminder:index')
 
 
