@@ -269,6 +269,10 @@ class DashboardView(View):
         except User.DoesNotExist:
             return redirect('user:login')
 
+
+        with connection.cursor() as cursor:
+            cursor.callproc("update_reminder_status", [user_id])
+
         # --- CALCULATIONS ---
 
         # A. Total Savings (Sum of all Saving records)
@@ -307,13 +311,11 @@ class DashboardView(View):
                 'target_date': goal.target_date
             })
 
-        # E. Recent Expenses (Last 5)
-        # Note: Your Expense model doesn't have a 'date' field in the snippet you sent.
-        # I am ordering by ID (newest created) as a fallback.
-        recent_expenses = Expense.objects.filter(user=user).select_related('category').order_by('-expense_id')[:5]
+        # E. Recent Expenses (Last 10)
+        recent_expenses = Expense.objects.filter(user=user).select_related('category').order_by('-expense_id')[:10]
 
         # F. Reminders List (Next 3 pending)
-        upcoming_reminders = Reminder.objects.filter(user=user, status=False).order_by('date_time')[:3]
+        upcoming_reminders = Reminder.objects.filter(user=user).exclude(status=True).order_by('date_time')[:3]
 
         context = {
             'user': user,
