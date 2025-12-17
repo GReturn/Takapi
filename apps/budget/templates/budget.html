@@ -8,212 +8,214 @@
             <p class="text-gray-500">Set and manage your budgets to stay on track with your financial goals.</p>
         </div>
         <div class="flex items-center space-x-4">
-{#            <button class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition shadow-sm text-sm font-medium">#}
-{#                + Create New Budget#}
-{#            </button>#}
+            {#            <button class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition shadow-sm text-sm font-medium">#}
+            {#                + Create New Budget#}
+            {#            </button>#}
         </div>
     </header>
 
     <!-- Main Content -->
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-dark">
-                <h3 class="text-gray-600 text-sm font-medium mb-2">Total Budget</h3>
-                <div class="text-3xl font-bold text-takapi-blue-dark">₱0.00</div>
-            </div>
-            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-green">
-                <h3 class="text-gray-600 text-sm font-medium mb-2">Active Budgets</h3>
-                <div class="text-3xl font-bold text-takapi-green">0</div>
-            </div>
-            <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-light">
-                <h3 class="text-gray-600 text-sm font-medium mb-2">Budget Utilization</h3>
-                <div class="text-3xl font-bold text-takapi-blue-light">0%</div>
-            </div>
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-dark">
+            <h3 class="text-gray-600 text-sm font-medium mb-2">Total Remaining Budget</h3>
+            <div class="text-3xl font-bold text-takapi-blue-dark">₱{{ total_spent | floatformat:2 }}</div>
         </div>
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-green">
+            <h3 class="text-gray-600 text-sm font-medium mb-2">Active Budgets</h3>
+            <div class="text-3xl font-bold text-takapi-green">{{ active_budgets }}</div>
+        </div>
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-light">
+            <h3 class="text-gray-600 text-sm font-medium mb-2">Budget Utilization</h3>
+            <div class="text-3xl font-bold text-takapi-blue-light">{{ total_utilization }}%</div>
+        </div>
+    </div>
 
-        <!-- Main Grid Layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Grid Layout -->
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <!-- Budget List (Left Side - Takes 2 columns) -->
-            <div class="lg:col-span-2">
-                <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <!-- Card Header -->
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                        <h2 class="text-xl font-semibold text-takapi-blue-dark">My Budgets</h2>
-                        <button onclick="openCreateModal()"
-                                class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
-                            + Create Budget
-                        </button>
-                    </div>
+        <!-- Budget List (Left Side - Takes 2 columns) -->
+        <div class="lg:col-span-3">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <!-- Card Header -->
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-xl font-semibold text-takapi-blue-dark">My Budgets</h2>
+                    <button onclick="openCreateModal()"
+                            class="bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
+                        + Create Budget
+                    </button>
+                </div>
 
-                    <!-- Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50 border-b border-gray-200">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Budget Name
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Amount
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Period (Days)
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Progress
-                                </th>
-                                <th class="px -6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Remaining
-                                </th>
-                                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200">
-                            <!-- Sample Data -->
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Budget Name
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Categories
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Amount
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Period (Days)
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Progress
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Remaining
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                        {% for budget in budgets %}
                             <tr class="hover:bg-gray-50 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Monthly
-                                    Groceries
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    {{ budget.name }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">₱5,000.00</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div class="flex items-center">
-                                        <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
-                                            <div class="bg-takapi-green h-2 rounded-full" style="width: 45%"></div>
-                                        </div>
-                                        <span class="text-gray-600">45%</span>
+
+                                <td class="px-6 py-4 text-sm text-gray-600">
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for cat in budget.categories %}
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ cat.name }}
+                            </span>
+                                        {% empty %}
+                                            <span class="text-gray-400 italic text-xs">No Category</span>
+                                        {% endfor %}
                                     </div>
                                 </td>
-                                <td class="px-2 py-4 whitespace-nowrap text-sm font-semibold text-takapi-green">
-                                    ₱2,750.00
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    ₱{{ budget.amount|floatformat:2 }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {{ budget.period }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <div class="flex flex-col">
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-xs text-gray-500">Spent: ₱{{ budget.spent|floatformat:0 }}</span>
+                                            {% comment %}<span class="text-xs font-bold
+                                                {% if budget.status_color == 'red' %}text-red-600
+                                                {% elif budget.status_color == 'yellow' %}text-yellow-600
+                                                {% else %}text-green-600{% endif %}">
+                                                {{ budget.real_percentage }}%
+                                            </span>{% endcomment %}
+                                        </div>
+                                        <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="h-2 rounded-full transition-all duration-500
+                                                {% if budget.status_color == 'red' %}bg-red-500
+                                                {% elif budget.status_color == 'yellow' %}bg-yellow-400
+                                                {% else %}bg-takapi-green{% endif %}"
+                                                 style="width: {{ budget.percentage }}%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold
+                                    {% if budget.remaining < 0 %}text-red-600{% else %}text-takapi-green{% endif %}">
+                                    ₱{{ budget.remaining|floatformat:2 }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    <button onclick="openEditModal()"
-                                            class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">Edit
+                                    <button onclick="openEditModal(
+                                            '{{ budget.id }}',
+                                            '{{ budget.name|escapejs }}',
+                                            '{{ budget.amount }}',
+                                            '{{ budget.period }}',
+                                            '{% for c in budget.categories %}{{ c.category_id }},{% endfor %}'
+                                            )"
+                                            class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">
+                                        Edit
                                     </button>
-                                    <button onclick="openDeleteModal()"
+                                    <button onclick="openDeleteModal({{ budget.id }})"
                                             class="text-red-600 hover:text-red-700 font-medium">Delete
                                     </button>
                                 </td>
                             </tr>
-                            <tr class="hover:bg-gray-50 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Entertainment
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">₱2,000.00</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div class="flex items-center">
-                                        <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
-                                            <div class="bg-takapi-green h-2 rounded-full" style="width: 60%"></div>
-                                        </div>
-                                        <span class="text-gray-600">60%</span>
-                                    </div>
-                                </td>
-                                <td class="px-2 py-4 whitespace-nowrap text-sm font-semibold text-takapi-green">
-                                    ₱800.00
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    <button class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">
-                                        Edit
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-700 font-medium">Delete</button>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                    You have not created any budgets yet.
                                 </td>
                             </tr>
-                            <tr class="hover:bg-gray-50 transition duration-150">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    Transportation
-                                </td>
-                                <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-600">₱3,500.00</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">30</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div class="flex items-center">
-                                        <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
-                                            <div class="bg-red-500 h-2 rounded-full" style="width: 85%"></div>
-                                        </div>
-                                        <span class="text-gray-600">85%</span>
-                                    </div>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-yellow-600">₱525.00
-                                </td>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    <button class="text-takapi-blue-dark hover:text-takapi-blue-darker font-medium">
-                                        Edit
-                                    </button>
-                                    <button class="text-red-600 hover:text-red-700 font-medium">Delete</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <!-- Budget Tips Sidebar (Right Side) -->
-            <div class="lg:col-span-1">
-                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                    <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">💡 Budget Tips</h2>
-                    <ul class="space-y-4">
-                        <li class="flex items-start space-x-3">
-                            <span class="text-takapi-green text-xl">✓</span>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Track Regularly</h3>
-                                <p class="text-sm text-gray-600">Review your budgets weekly to stay on target.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start space-x-3">
-                            <span class="text-takapi-green text-xl">✓</span>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Be Realistic</h3>
-                                <p class="text-sm text-gray-600">Set achievable budget amounts based on your income.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start space-x-3">
-                            <span class="text-takapi-green text-xl">✓</span>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Emergency Fund</h3>
-                                <p class="text-sm text-gray-600">Always include a buffer for unexpected expenses.</p>
-                            </div>
-                        </li>
-                        <li class="flex items-start space-x-3">
-                            <span class="text-takapi-green text-xl">✓</span>
-                            <div>
-                                <h3 class="font-semibold text-gray-800">Adjust as Needed</h3>
-                                <p class="text-sm text-gray-600">Don't be afraid to modify budgets based on reality.</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Quick Stats Card -->
-                <div class="bg-gradient-to-br from-takapi-blue-dark to-takapi-blue-light rounded-xl shadow-md p-6 text-takapi-blue-dark">
-                    <h2 class="text-xl font-semibold mb-4">📊 Quick Stats</h2>
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 opacity-90">Budgets Created</span>
-                            <span class="font-bold text-lg">3</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 opacity-90">On Track</span>
-                            <span class="font-bold text-lg">2</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 opacity-90">Over Budget</span>
-                            <span class="font-bold text-lg">0</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600 opacity-90">Nearly Exceeded</span>
-                            <span class="font-bold text-lg">1</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- Budget Tips Sidebar -->
+        <div class="col-span-2 lg:col-span-4 flex flex-col lg:flex-row gap-6">
+            <!-- Budget Tips Card -->
+            <div class="bg-white rounded-xl shadow-md p-6 lg:flex-1">
+                <h2 class="text-xl font-semibold text-takapi-blue-dark mb-4">💡 Budget Tips</h2>
+                <ul class="space-y-4">
+                    <li class="flex items-start space-x-3">
+                        <span class="text-takapi-green text-xl">✓</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Track Regularly</h3>
+                            <p class="text-sm text-gray-600">Review your budgets weekly to stay on target.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <span class="text-takapi-green text-xl">✓</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Be Realistic</h3>
+                            <p class="text-sm text-gray-600">Set achievable budget amounts based on your income.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <span class="text-takapi-green text-xl">✓</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Emergency Fund</h3>
+                            <p class="text-sm text-gray-600">Always include a buffer for unexpected expenses.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start space-x-3">
+                        <span class="text-takapi-green text-xl">✓</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Adjust as Needed</h3>
+                            <p class="text-sm text-gray-600">Don't be afraid to modify budgets based on reality.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quick Stats Card -->
+            <div class="bg-gradient-to-br from-takapi-blue-dark to-takapi-blue-light rounded-xl shadow-md p-6 lg:flex-1">
+                <h2 class="text-xl font-semibold mb-4">📊 Quick Stats</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 opacity-90">Budgets Created</span>
+                        <span class="font-bold text-lg">{{ active_budgets }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 opacity-90">On Track</span>
+                        <span class="font-bold text-lg">{{ stats.on_track }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 opacity-90">Over Budget</span>
+                        <span class="font-bold text-lg">{{ stats.over_budget }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600 opacity-90">Nearly Exceeded</span>
+                        <span class="font-bold text-lg">{{ stats.near_limit }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- Create Budget Modal -->
@@ -225,19 +227,43 @@
                 <form method="POST" class="space-y-4">
                     {% csrf_token %}
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
-                        <input type="text" name="name" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Budget Name
+                            <input type="text" name="budget_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent mt-1.5">
+                        </label>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Amount (₱)</label>
-                        <input type="number" name="amount" step="0.01" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Amount (₱)
+                            <input type="number" name="budget_amount" step="0.01" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent mt-1.5">
+                        </label>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Period (Days)</label>
-                        <input type="number" name="period_days" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Period (Days)
+                            <input type="number" name="budget_period_days" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent mt-1.5">
+                        </label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Expense Categories</label>
+                        <div class="mt-1.5 p-3 border border-gray-300 rounded-lg bg-white max-h-48 overflow-y-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                {% for category in categories %}
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox"
+                                               name="expense_categories"
+                                               value="{{ category.category_id }}"
+                                               class="form-checkbox h-4 w-4 text-blue-600 rounded focus:ring-blue-500">
+                                        <span class="text-gray-700">{{ category.name }}</span>
+                                    </label>
+                                {% empty %}
+                                    <p class="text-sm text-gray-500 col-span-2">No categories found.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                     <div class="flex space-x-3 pt-4">
                         <button type="submit"
@@ -262,15 +288,19 @@
                 <h3 class="text-lg font-semibold text-takapi-blue-dark mb-4">Delete Budget</h3>
                 <p class="text-gray-700 mb-4">Are you sure you want to delete this budget? This action cannot be
                     undone.</p>
-                <div class="flex space-x-3">
-                    <button class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition duration-300">
+
+                <form id="deleteBudgetForm" method="POST" class="flex space-x-3">
+                    {% csrf_token %}
+                    <button type="submit"
+                            class="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-red-700 transition duration-300">
                         Delete
                     </button>
                     <button type="button" onclick="closeDeleteModal()"
                             class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 transition duration-300">
                         Cancel
                     </button>
-                </div>
+                </form>
+
             </div>
         </div>
     </div>
@@ -280,27 +310,48 @@
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3">
                 <h3 class="text-lg font-semibold text-takapi-blue-dark mb-4">Edit Budget</h3>
-                <form method="POST" class="space-y-4">
+                <form id='editBudgetForm' method="POST" class="space-y-4">
                     {% csrf_token %}
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
-                        <input type="text" name="name" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                        <input type="text" id="edit_name" name="edit_name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Amount (₱)</label>
-                        <input type="number" name="amount" step="0.01" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                        <input type="number" id="edit_amount" name="edit_amount" step="0.01" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Period (Days)</label>
-                        <input type="number" name="period_days" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark focus:border-transparent">
+                        <input type="number" id="edit_period_days" name="edit_period_days" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi-blue-dark outline-none">
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Expense Categories</label>
+                        <div class="p-3 border border-gray-300 rounded-lg bg-white max-h-32 overflow-y-auto">
+                            <div class="grid grid-cols-2 gap-2">
+                                {% for category in categories %}
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="checkbox"
+                                               name="edit_expense_categories"
+                                               value="{{ category.category_id }}"
+                                               class="edit-category-checkbox form-checkbox h-4 w-4 text-blue-600 rounded">
+                                        <span class="text-xs text-gray-700">{{ category.name }}</span>
+                                    </label>
+                                {% empty %}
+                                    <p class="text-xs text-gray-500">No categories found.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="flex space-x-3 pt-4">
                         <button type="submit"
                                 class="flex-1 bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">
-                            Create
+                            Save Changes
                         </button>
                         <button type="button" onclick="closeEditModal()"
                                 class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-400 transition duration-300">
@@ -321,7 +372,9 @@
             document.getElementById('createBudgetModal').classList.add('hidden');
         }
 
-        function openDeleteModal() {
+        function openDeleteModal(budgetId) {
+            const form = document.getElementById('deleteBudgetForm');
+            form.action = `/budget/delete/${budgetId}/`;
             document.getElementById('deleteBudgetModal').classList.remove('hidden');
         }
 
@@ -329,7 +382,34 @@
             document.getElementById('deleteBudgetModal').classList.add('hidden');
         }
 
-        function openEditModal() {
+        function openEditModal(budgetId, name, amount, period, categoryIdsString) {
+            // 1. Set the form action URL
+            const form = document.getElementById('editBudgetForm');
+            form.action = `/budget/edit/${budgetId}/`;
+
+            // 2. Populate basic inputs
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_amount').value = parseFloat(amount).toFixed(2); // Ensure decimal format
+            document.getElementById('edit_period_days').value = period;
+
+            // 3. Handle Checkboxes
+            // Convert the comma-separated string "1,2," into an array ['1', '2']
+            const selectedIds = categoryIdsString.split(',').filter(id => id !== '');
+
+            // Get all checkboxes in the edit modal
+            const checkboxes = document.querySelectorAll('.edit-category-checkbox');
+
+            // Loop through each checkbox
+            checkboxes.forEach(box => {
+                // Check the box if its value is in our list of selected IDs
+                if (selectedIds.includes(box.value)) {
+                    box.checked = true;
+                } else {
+                    box.checked = false;
+                }
+            });
+
+            // 4. Show the modal
             document.getElementById('editBudgetModal').classList.remove('hidden');
         }
 
