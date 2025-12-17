@@ -101,7 +101,9 @@ class LoginView(View):
             user = User.objects.get(email=email)
 
             if check_password(password, user.password):
-                rotate_token(request) # rotating token prevents session fixation (fixes occasional 403 forbidden)
+                # rotating token prevents session fixation (fixes occasional 403 forbidden)
+                # read more: https://owasp.org/www-community/attacks/Session_fixation
+                rotate_token(request)
                 request.session['user_id'] = user.user_id
                 request.session.set_expiry(0)
                 return redirect('user:dashboard')
