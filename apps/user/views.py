@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import check_password, make_password
-from django.db import connection, DatabaseError
+from django.db import connection
 from django.db.models import Sum
+from django.middleware.csrf import rotate_token
 from django.shortcuts import render, redirect, reverse
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -15,25 +16,67 @@ from apps.savings.models import Saving, SavingGoal
 from apps.reminder.models import Reminder
 
 
+@method_decorator(never_cache, name='dispatch')
 class IndexView(View):
     template_name = 'home.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        current_user = None
+
+        if user_id:
+            try:
+                current_user = User.objects.get(user_id=user_id)
+            except User.DoesNotExist:
+                request.session.flush() # case: user deleted and we are redirected to the dashboard
+
+        context = {
+            'user': current_user
+        }
+
+        return render(request, self.template_name, context)
 
 
+@method_decorator(never_cache, name='dispatch')
 class PrivacyView(View):
     template_name = 'privacy.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        current_user = None
+
+        if user_id:
+            try:
+                current_user = User.objects.get(user_id=user_id)
+            except User.DoesNotExist:
+                request.session.flush()  # case: user deleted and we are redirected to the dashboard
+
+        context = {
+            'user': current_user
+        }
+
+        return render(request, self.template_name, context)
 
 
+@method_decorator(never_cache, name='dispatch')
 class TermsView(View):
     template_name = 'terms.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user_id = request.session.get('user_id')
+        current_user = None
+
+        if user_id:
+            try:
+                current_user = User.objects.get(user_id=user_id)
+            except User.DoesNotExist:
+                request.session.flush()  # case: user deleted and we are redirected to the dashboard
+
+        context = {
+            'user': current_user
+        }
+
+        return render(request, self.template_name, context)
 
 
 class LogoutView(View):
@@ -58,6 +101,7 @@ class LoginView(View):
             user = User.objects.get(email=email)
 
             if check_password(password, user.password):
+                rotate_token(request) # rotating token prevents session fixation (fixes occasional 403 forbidden)
                 request.session['user_id'] = user.user_id
                 request.session.set_expiry(0)
                 return redirect('user:dashboard')
@@ -164,22 +208,19 @@ class ProfileView(TemplateView):
                         user_id,
                         request.POST.get('first_name'),
                         request.POST.get('last_name'),
-                        request.POST.get('email')
+                        request.POST.get('email'),
+                        request.POST.get('age'),
+                        request.POST.get('gender')
                     ])
                     messages.success(request, 'Info updated successfully.')
 
                 elif action == 'update_preferences':
-                    user.age = request.POST.get('age')
-                    user.gender = request.POST.get('gender')
-
                     currency_id = request.POST.get('currency')
                     if not currency_id:
                         messages.error(request, 'Please select a currency.')
                     else:
                         cursor.callproc('update_user_preferences', [
                             user_id,
-                            request.POST.get('age'),
-                            request.POST.get('gender'),
                             currency_id
                         ])
                         messages.success(request, 'Preferences updated successfully.')
@@ -218,7 +259,6 @@ class DashboardView(View):
     template_name = 'dashboard.html'
 
     def get(self, request):
-        # 1. Security: Ensure user is logged in via your custom session
         user_id = request.session.get('user_id')
         if not user_id:
             return redirect('user:login')
@@ -227,6 +267,10 @@ class DashboardView(View):
             user = User.objects.get(user_id=user_id)
         except User.DoesNotExist:
             return redirect('user:login')
+
+
+        with connection.cursor() as cursor:
+            cursor.callproc("update_reminder_status", [user_id])
 
         # --- CALCULATIONS ---
 
@@ -244,7 +288,7 @@ class DashboardView(View):
         budget_percent = (total_expenses / total_budget * 100) if total_budget > 0 else 0
 
         # C. Pending Reminders Count
-        pending_reminders_count = Reminder.objects.filter(user=user, status=False).count()
+        pending_reminders_count = Reminder.objects.filter(user=user).exclude(status=True).count()
 
         # --- LISTS & COMPLEX DATA ---
 
@@ -252,27 +296,20 @@ class DashboardView(View):
         goals = SavingGoal.objects.filter(user=user)
         goals_data = []
         for goal in goals:
-            # How much saved for THIS specific goal?
             saved_amount = Saving.objects.filter(user=user, goal=goal).aggregate(Sum('amount'))['amount__sum'] or 0
-
-            # Percentage
             percent = (saved_amount / goal.target_amount * 100) if goal.target_amount > 0 else 0
-
             goals_data.append({
                 'name': goal.name,
                 'current': saved_amount,
                 'target': goal.target_amount,
-                'percent': min(percent, 100),  # Cap at 100% for CSS width
+                'percent': min(percent, 100),
                 'target_date': goal.target_date
             })
 
-        # E. Recent Expenses (Last 5)
-        # Note: Your Expense model doesn't have a 'date' field in the snippet you sent.
-        # I am ordering by ID (newest created) as a fallback.
-        recent_expenses = Expense.objects.filter(user=user).select_related('category').order_by('-expense_id')[:5]
-
+        # E. Recent Expenses (Last 10)
+        recent_expenses = Expense.objects.filter(user=user).select_related('category').order_by('-expense_id')[:10]
         # F. Reminders List (Next 3 pending)
-        upcoming_reminders = Reminder.objects.filter(user=user, status=False).order_by('date_time')[:3]
+        upcoming_reminders = Reminder.objects.filter(user=user).exclude(status=True).order_by('date_time')[:3]
 
         context = {
             'user': user,
@@ -287,5 +324,5 @@ class DashboardView(View):
             'recent_expenses': recent_expenses,
             'upcoming_reminders': upcoming_reminders,
         }
-
         return render(request, self.template_name, context)
+

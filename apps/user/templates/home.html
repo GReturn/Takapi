@@ -35,40 +35,76 @@
 <body class="bg-white text-gray-800">
 
     <!-- Navigation Bar -->
-    <nav class="bg-white p-4 shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="#" class="flex items-center space-x-2">
-                <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-10 w-10">
-                <span class="text-2xl font-bold text-takapi-blue-dark">Takapi</span>
-            </a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#features" class="text-gray-600 hover:text-takapi-blue-dark">Features</a>
-                <a href="#about" class="text-gray-600 hover:text-takapi-blue-dark">About</a>
-                <a href="#contact" class="text-gray-600 hover:text-takapi-blue-dark">Contact</a>
-            </div>
-            <div class="hidden md:flex items-center space-x-4">
-                <a href="{% url 'user:login' %}" class="text-gray-600 hover:text-takapi-blue-dark font-medium">Log In</a>
-                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition duration-300">Sign Up</a>
-            </div>
-            <!-- Mobile Menu Button -->
-            <button class="md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-            </button>
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+
+        <a href="#" class="flex items-center space-x-2 group">
+            <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-8 w-8 group-hover:scale-105 transition-transform duration-200">
+            <span class="text-xl font-bold text-takapi-blue-dark">Takapi</span>
+        </a>
+
+        <div class="hidden md:flex items-center space-x-8">
+            <a href="#features" class="text-sm font-medium text-gray-600 hover:text-takapi-blue-dark transition-colors">Features</a>
+            <a href="#about" class="text-sm font-medium text-gray-600 hover:text-takapi-blue-dark transition-colors">About</a>
+            <a href="#contact" class="text-sm font-medium text-gray-600 hover:text-takapi-blue-dark transition-colors">Contact</a>
         </div>
-    </nav>
+
+        <div class="hidden md:flex items-center space-x-4">
+
+            {% if user %}
+                    <div class="flex items-center space-x-6">
+                        <a href="{% url 'user:dashboard' %}" class="text-takapi-blue-dark font-medium hover:underline transition">
+                            Go to Dashboard
+                        </a>
+
+                        <div class="flex items-center space-x-3 pl-6 border-l border-gray-200">
+                            <span class="text-gray-700 font-medium">
+                                {{ user.first_name|default:"User" }}
+                            </span>
+                            <div class="h-9 w-9 rounded-full bg-takapi-blue-dark text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                                {{ user.first_name|slice:":1"|default:"U" }}
+                            </div>
+                        </div>
+                    </div>
+
+            {% else %}
+                <a href="{% url 'user:login' %}" class="text-sm font-medium text-gray-600 hover:text-takapi-blue-dark transition">
+                    Log In
+                </a>
+                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 hover:shadow-md transition duration-200">
+                    Sign Up
+                </a>
+            {% endif %}
+
+        </div>
+
+        <button class="md:hidden p-2 text-gray-600 hover:text-takapi-blue-dark hover:bg-gray-50 rounded-md transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+        </button>
+    </div>
+</nav>
 
     <!-- Hero Section -->
     <header class="swoop-bg">
-        <div class="container mx-auto px-6 py-24 md:py-32 text-center">
-            <h1 class="text-4xl md:text-6xl font-bold text-takapi-blue-dark leading-tight">Take Control of Your Savings.</h1>
-            <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The smart, simple way for students to manage money, track expenses, and reach their financial goals. Start your journey to financial freedom today.</p>
-            <div class="mt-8">
-                <a href="{% url 'user:login' %}" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300">Get Started for Free</a>
-            </div>
+    <div class="container mx-auto px-6 py-24 md:py-32 text-center">
+        <h1 class="text-4xl md:text-6xl font-bold text-takapi-blue-dark leading-tight">Take Control of Your Savings.</h1>
+        <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">The smart, simple way for students to manage money, track expenses, and reach their financial goals. Start your journey to financial freedom today.</p>
+
+        <div class="mt-8">
+            {% if user %}
+                <a href="{% url 'user:dashboard' %}" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Go to Dashboard
+                </a>
+            {% else %}
+                <a href="{% url 'user:signup' %}" class="bg-takapi-blue-dark text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-takapi-blue-darker transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Get Started for Free
+                </a>
+            {% endif %}
         </div>
-    </header>
+    </div>
+</header>
 
     <!-- Features Section -->
     <section id="features" class="py-20 bg-gray-50">

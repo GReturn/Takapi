@@ -15,6 +15,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render
 from django.urls import path, include
 
 urlpatterns = [
@@ -24,4 +26,28 @@ urlpatterns = [
     path("expense/", include('apps.expense.urls')),
     path('reminder/', include('apps.reminder.urls')),
     path("budget/", include('apps.budget.urls'))
+]
+
+def custom_page_not_found_view(request, exception):
+    return render(request, "404.html", status=404)
+
+def custom_permission_denied_view(request, exception):
+    return render(request, "403.html", status=403)
+
+def custom_server_error_view(request):
+    return render(request, "500.html", status=500)
+
+handler404 = 'Takapi.urls.custom_page_not_found_view'
+handler403 = 'Takapi.urls.custom_permission_denied_view'
+handler500 = 'Takapi.urls.custom_server_error_view'
+
+def trigger_403(request):
+    raise PermissionDenied
+
+def trigger_500(request):
+    raise Exception("This is a test 500 error!")
+
+urlpatterns += [
+    path('test-403/', trigger_403),
+    path('test-500/', trigger_500),
 ]
