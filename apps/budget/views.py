@@ -54,17 +54,18 @@ class BudgetView(View):
                 categories = budget_obj.category.all()
 
                 # --- CALCULATION LOGIC ---
-                # Define the time window for this budget
-                start_date = budget_obj.created_at
+                # 1. Get the start date (convert to date object to include all expenses from day 1)
+                start_date = budget_obj.created_at.date()
+
+                # 2. Calculate end date
                 end_date = start_date + timedelta(days=budget_obj.budget_period)
 
-                # Sum expenses that match: User + Categories + Time Window
-                # Note: Adjust 'date' if your Expense model uses 'created_at'
+                # 3. Sum expenses
                 spent = Expense.objects.filter(
                     user=user,
                     category__in=categories,
-                    date__gte=start_date,  # expenses after budget start
-                    date__lte=end_date  # expenses before budget end
+                    date__gte=start_date,  # Now comparing Date vs Date (Safe!)
+                    date__lte=end_date
                 ).aggregate(Sum('amount'))['amount__sum'] or 0
 
             except Budget.DoesNotExist:
@@ -114,7 +115,8 @@ class BudgetView(View):
             'total_budget': total_allocated,
             'active_budgets': len(formatted_budgets),
             'total_utilization': int(total_utilization),
-            'stats': stats
+            'stats': stats,
+            'total_spent': total_allocated - total_spent_global,
         }
 
         return render(request, self.template_name, context)
