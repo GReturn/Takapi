@@ -9,7 +9,8 @@ class Reminder(models.Model):
     date_time = models.DateTimeField(null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.BooleanField(null=True)
-    date_responded = models.DateField(null=True)
+    description = models.CharField(max_length=150, null=False, default="")
+    date_responded = models.DateTimeField(null=True)
 
     def __str__(self):
         return f"Reminder #{self.reminder_id}"
