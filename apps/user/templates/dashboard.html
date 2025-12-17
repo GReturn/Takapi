@@ -61,7 +61,7 @@
             <section class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-bold text-takapi-blue-dark">Active Saving Goals</h3>
-                    <a href="#" class="text-sm text-takapi-blue-light hover:underline">View All</a>
+                    <a href="{% url 'savings:index' %}" class="text-sm text-takapi-blue-light hover:underline">View All</a>
                 </div>
 
                 {% if goals_data %}
