@@ -16,8 +16,12 @@
         </button>
     </header>
 
-   {% if message %}
-        <p>{{ message }}</p>
+   {% if messages %}
+        {% for message in messages %}
+            <div class="p-4 rounded-lg shadow-sm border text-center {% if message.tags == 'success' %}bg-green-50 text-green-700 border-green-200{% else %}bg-red-50 text-red-700 border-red-200{% endif %}">
+                        {{ message }}
+                    </div>
+        {% endfor %}
     {% endif %}
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -38,6 +42,7 @@
                         <th class="py-4 px-6 text-xs font-semibold uppercase text-gray-500 tracking-wider">Title</th>
                         <th class="py-4 px-6 text-xs font-semibold uppercase text-gray-500 tracking-wider">Date & Time</th>
                         <th class="py-4 px-6 text-xs font-semibold uppercase text-gray-500 tracking-wider">Status</th>
+                        <th class="py-4 px-6 text-xs font-semibold uppercase text-gray-500 tracking-wider">Date Completed</th>
                         <th class="py-4 px-6 text-xs font-semibold uppercase text-gray-500 tracking-wider text-right">Actions</th>
                     </tr>
                 </thead>
@@ -62,38 +67,63 @@
                         </td>
 
                         <td class="py-4 px-6">
-                            {% if reminder.status %}
+                            {% if reminder.status is True %}
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     Completed
                                 </span>
-                            {% else %}
+                            {% elif reminder.status is None %}
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                     Pending
                                 </span>
+                            {% elif reminder.status is False %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Overdue
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="py-4 px-6">
+                            {% if reminder.date_responded %}
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <span class="text-sm text-gray-700 font-medium">{{ reminder.date_responded|date:"M d, Y" }}</span>
+                                </div>
+                                <div class="flex items-center mt-1">
+                                    <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span class="text-xs text-gray-500">{{ reminder.date_responded|time:"h:i" }}</span>
+                                </div>
+                            {% else %}
+                                <div class="flex items-center">
+
+                                    <span class="text-sm text-gray-700 font-medium">Not Completed</span>
+                                </div>
                             {% endif %}
                         </td>
 
                         <td class="py-4 px-6 text-right">
                             <div class="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity">
 
-                                <form method="POST" >
-                                    {% csrf_token %}
-                                    <button type="submit" title="Toggle Status" class="text-gray-400 hover:text-green-600 transition">
+                                {% if not reminder.status%}
+                                    <button type="button"
+                                        onclick="openToggleModal(
+                                            '{{ reminder.reminder_id }}',
+                                        )"
+                                        class="text-gray-400 hover:text-takapi-blue-dark transition" title="Complete">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     </button>
-                                </form>
 
-                                <button type="button" 
-                                    onclick="openEditModal(
-                                        '{{ reminder.reminder_id }}', 
-                                        '{{ reminder.message|escapejs }}', 
-                                        '{{ reminder.date_time|date:'Y-m-d' }}', 
-                                        '{{ reminder.date_time|time:'H:i' }}',
-                                        '{{ reminder.description }}'
-                                    )"
-                                    class="text-gray-400 hover:text-takapi-blue-dark transition" title="Edit">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                </button>
+                                    <button type="button"
+                                        onclick="openEditModal(
+                                            '{{ reminder.reminder_id }}',
+                                            '{{ reminder.message|escapejs }}',
+                                            '{{ reminder.date_time|date:'Y-m-d' }}',
+                                            '{{ reminder.date_time|time:'H:i' }}',
+                                            '{{ reminder.description }}'
+                                        )"
+                                        class="text-gray-400 hover:text-takapi-blue-dark transition" title="Edit">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </button>
+                                {% endif%}
 
                                 <button type="button" 
                                     onclick="openDeleteModal('{{ reminder.reminder_id }}')" 
@@ -211,6 +241,23 @@
         </div>
     </div>
 
+
+     <div id="toggle-reminder-modal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm p-6 text-center transform transition-transform duration-300 scale-95">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Complete Reminder</h3>
+            <p class="text-gray-500 text-sm mb-6">Are you certain that you have completed it?</p>
+
+            <form method="POST" id="toggle-reminder-form">
+                {% csrf_token %}
+                <div class="flex space-x-3">
+                    <button type="button" onclick="closeModal('toggle-reminder-modal')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg font-bold hover:bg-gray-200 transition">Cancel</button>
+                    <button type="submit" class="flex-1 bg-green-600 text-white py-2 rounded-lg font-bold hover:bg-green-700 transition">Yes, Completed</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+
     <script>
         // --- HELPERS ---
         function openModal(id) {
@@ -231,32 +278,31 @@
             }, 300);
         }
 
-        // --- SPECIFIC MODAL LOGIC ---
+
         
-        // 1. Open Edit Modal & Populate Data
+
         function openEditModal(id, message, date, time, description) {
-            // Populate inputs
-            document.getElementById('edit-message').value = message;
-            document.getElementById('edit-date').value = date;
-            document.getElementById('edit-time').value = time;
+            document.getElementById('edit-message').value = message
+            document.getElementById('edit-date').value = date
+            document.getElementById('edit-time').value = time
             document.getElementById('edit-description').value = description
-            
-            // Set Form Action Dynamically
-            // Assumes your urls.py has a pattern like reminder/edit/<int:pk>/'
-            const form = document.getElementById('edit-reminder-form');
-            form.action = `/reminder/edit/${id}`; // Update this path if your URL structure is different
-            
-            openModal('edit-reminder-modal');
+            const form = document.getElementById('edit-reminder-form')
+            form.action = `/reminder/edit/${id}`
+            openModal('edit-reminder-modal')
         }
 
-        // 2. Open Delete Modal
         function openDeleteModal(id) {
-            const form = document.getElementById('delete-reminder-form');
-            form.action = `/reminder/delete/${id}`; // Update this path if needed
-            openModal('delete-reminder-modal');
+            const form = document.getElementById('delete-reminder-form')
+            form.action = `/reminder/delete/${id}`
+            openModal('delete-reminder-modal')
         }
 
-        // Set default date to today for Create Modal
+        function openToggleModal(id) {
+            const form = document.getElementById('toggle-reminder-form')
+            form.action = `/reminder/complete/${id}`
+            openModal('toggle-reminder-modal')
+        }
+
         document.getElementById('create-date-input').valueAsDate = new Date();
     </script>
 {% endblock %}
