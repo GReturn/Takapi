@@ -56,6 +56,7 @@ def add_saving(request):
 
     return redirect('savings:index')
 #
+@never_cache
 def saving_history(request):
     user_id = request.session.get('user_id')
     if not user_id:
