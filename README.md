@@ -110,34 +110,36 @@ Takapi/
 ```mermaid
 erDiagram
     USER {
-        int userid PK
+        int user_id PK
         string email
         string password
-        string fname
-        string lname
+        string first_name
+        string last_name
         string gender
         int age
     }
 
     BUDGET {
-        int budgetid PK
+        int budget_id PK
         decimal amount
         string name
-        string budget_period
+        int budget_period
+        datetime created_at
     }
 
     REMINDER {
-        int reminderid PK
+        int reminder_id PK
         string message
-        datetime datetime
-        string status
-        date dateresponded
+        datetime date_time
+        bool status
+        string description
+        datetime date_responded
     }
 
     CURRENCY {
-        int currencyid PK
-        string shortname
-        string longname
+        int currency_id PK
+        string short_name
+        string long_name
     }
 
     SAVING_GOAL {
@@ -154,12 +156,14 @@ erDiagram
     }
 
     EXPENSE {
-        int expenseid PK
+        int expense_id PK
         decimal amount
+        date date
+        string description
     }
 
     EXPENSE_CATEGORY {
-        int categoryid PK
+        int category_id PK
         string name
     }
 
@@ -174,6 +178,7 @@ erDiagram
     
     SAVING_GOAL ||--o{ SAVING : "belongs to"
     EXPENSE_CATEGORY ||--|{ EXPENSE : "belongs to"
+    BUDGET }|--|{ EXPENSE_CATEGORY
 ```
 
 ---
