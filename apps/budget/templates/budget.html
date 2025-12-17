@@ -28,7 +28,7 @@
         </div>
         <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-takapi-blue-light">
             <h3 class="text-gray-600 text-sm font-medium mb-2">Budget Utilization</h3>
-            <div class="text-3xl font-bold text-takapi-blue-light">0%</div>
+            <div class="text-3xl font-bold text-takapi-blue-light">{{ total_utilization }}%</div>
         </div>
     </div>
 
@@ -98,12 +98,30 @@
                                     {{ budget.period }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <div class="flex items-center">
-                                        <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
-                                            <div class="bg-takapi-green h-2 rounded-full" style="width: 0%"></div>
+                                    <div class="flex flex-col">
+                                        <div class="flex justify-between mb-1">
+                                            <span class="text-xs text-gray-500">Spent: ₱{{ budget.spent|floatformat:0 }}</span>
+                                            <span class="text-xs font-bold
+                                                {% if budget.status_color == 'red' %}text-red-600
+                                                {% elif budget.status_color == 'yellow' %}text-yellow-600
+                                                {% else %}text-green-600{% endif %}">
+                                                {{ budget.real_percentage }}%
+                                            </span>
                                         </div>
-                                        <span class="text-gray-600">0%</span>
+                                        <div class="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                                            <div class="h-2 rounded-full transition-all duration-500
+                                                {% if budget.status_color == 'red' %}bg-red-500
+                                                {% elif budget.status_color == 'yellow' %}bg-yellow-400
+                                                {% else %}bg-takapi-green{% endif %}"
+                                                 style="width: {{ budget.percentage }}%">
+                                            </div>
+                                        </div>
                                     </div>
+                                </td>
+
+                                <td class="px-2 py-4 whitespace-nowrap text-sm font-semibold
+    {% if budget.remaining < 0 %}text-red-600{% else %}text-takapi-green{% endif %}">
+                                    ₱{{ budget.remaining|floatformat:2 }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                                     <button onclick="openEditModal(
@@ -180,15 +198,15 @@
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600 opacity-90">On Track</span>
-                        <span class="font-bold text-lg">2</span>
+                        <span class="font-bold text-lg">{{ stats.on_track }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600 opacity-90">Over Budget</span>
-                        <span class="font-bold text-lg">0</span>
+                        <span class="font-bold text-lg">{{ stats.over_budget }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600 opacity-90">Nearly Exceeded</span>
-                        <span class="font-bold text-lg">1</span>
+                        <span class="font-bold text-lg">{{ stats.near_limit }}</span>
                     </div>
                 </div>
             </div>

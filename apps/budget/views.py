@@ -4,10 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.cache import never_cache
+from django.db.models import Sum
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import Budget
-from ..expense.models import ExpenseCategory
 from ..user.models import User
+from apps.expense.models import ExpenseCategory, Expense  # Ensure Expense is imported
 
 
 @method_decorator(never_cache, name='dispatch')
@@ -24,45 +27,94 @@ class BudgetView(View):
         except User.DoesNotExist:
             return redirect('user:login')
 
-        # 1. Fetch raw budget data using Stored Procedure
+        # 1. Fetch raw budget data (Stored Procedure)
         with connection.cursor() as cursor:
             cursor.callproc('get_budgets', [user_id])
             budgets_from_proc = cursor.fetchall()
 
-        # 2. Convert raw tuples to dictionaries and attach categories
-        # This is the "Hybrid" approach: SP for main data, ORM for relationships
         formatted_budgets = []
 
-        for row in budgets_from_proc:
-            # Map the tuple indices to names based on your HTML structure
-            # row[0]=id, row[1]=amount, row[2]=name, row[3]=period
-            budget_id = row[0]
+        # Summary Variables
+        total_allocated = 0
+        total_spent_global = 0
+        stats = {
+            'on_track': 0,  # < 80%
+            'near_limit': 0,  # 80% - 100%
+            'over_budget': 0  # > 100%
+        }
 
-            # Fetch categories for this specific budget using Django ORM
-            # .all() fetches the list of categories efficiently
+        # 2. Process each budget
+        for row in budgets_from_proc:
+            budget_id = row[0]
+            budget_amount = row[1] or 0
+
             try:
-                # We get the budget object just to access the M2M relationship
+                # Get the object to access Many-to-Many and created_at
                 budget_obj = Budget.objects.get(budget_id=budget_id)
                 categories = budget_obj.category.all()
+
+                # --- CALCULATION LOGIC ---
+                # Define the time window for this budget
+                start_date = budget_obj.created_at
+                end_date = start_date + timedelta(days=budget_obj.budget_period)
+
+                # Sum expenses that match: User + Categories + Time Window
+                # Note: Adjust 'date' if your Expense model uses 'created_at'
+                spent = Expense.objects.filter(
+                    user=user,
+                    category__in=categories,
+                    date__gte=start_date,  # expenses after budget start
+                    date__lte=end_date  # expenses before budget end
+                ).aggregate(Sum('amount'))['amount__sum'] or 0
+
             except Budget.DoesNotExist:
                 categories = []
+                spent = 0
+
+            # Calculate Stats
+            remaining = float(budget_amount) - float(spent)
+            percentage = (float(spent) / float(budget_amount) * 100) if budget_amount > 0 else 0
+
+            # Determine Status for Quick Stats
+            if percentage > 100:
+                status_color = 'red'
+                stats['over_budget'] += 1
+            elif percentage >= 80:
+                status_color = 'yellow'
+                stats['near_limit'] += 1
+            else:
+                status_color = 'green'
+                stats['on_track'] += 1
+
+            # Update Global Totals
+            total_allocated += float(budget_amount)
+            total_spent_global += float(spent)
 
             formatted_budgets.append({
                 'id': row[0],
-                'amount': row[1],
+                'amount': budget_amount,
                 'name': row[2],
                 'period': row[3],
-                'categories': categories,  # This is the list we need for the HTML
+                'categories': categories,
+                # New calculated fields
+                'spent': spent,
+                'remaining': remaining,
+                'percentage': min(int(percentage), 100),  # Cap visual bar at 100%
+                'real_percentage': int(percentage),  # Actual % for text
+                'status_color': status_color
             })
 
-        total_budget = sum((b['amount'] or 0) for b in formatted_budgets)
-        active_budgets = len(formatted_budgets)
+        # Final Global Calc
+        total_utilization = (total_spent_global / total_allocated * 100) if total_allocated > 0 else 0
 
         context = {
-            'budgets': formatted_budgets,  # Now passing the list of dicts
-            'total_budget': total_budget,
-            'active_budgets': active_budgets,
-            'categories': ExpenseCategory.objects.filter(user=user)  # For the modal dropdown
+            'budgets': formatted_budgets,
+            'categories': ExpenseCategory.objects.filter(user=user),
+            # Summary Data
+            'total_budget': total_allocated,
+            'active_budgets': len(formatted_budgets),
+            'total_utilization': int(total_utilization),
+            'stats': stats
         }
 
         return render(request, self.template_name, context)
