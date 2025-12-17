@@ -10,7 +10,7 @@ class Budget(models.Model):
     amount = models.DecimalField(decimal_places=2, max_digits=10)
     name = models.CharField(max_length=100)
     budget_period = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ManyToManyField(ExpenseCategory, blank=True, related_name='budgets')
