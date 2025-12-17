@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.hashers import check_password, make_password
 from django.db import connection
 from django.db.models import Sum
@@ -280,14 +282,27 @@ class DashboardView(View):
         total_savings = Saving.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
 
         # B. Monthly Budget vs Expenses
-        # Note: Summing all budgets. You might want to filter by period in the future.
-        total_budget = Budget.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
-        total_expenses = Expense.objects.filter(user=user).aggregate(Sum('amount'))['amount__sum'] or 0
+        all_budgets = Budget.objects.filter(user=user).prefetch_related('category')
+        calculated_total_budget = 0
+        calculated_total_spent = 0
 
-        # Calculate Remaining Budget
-        remaining_budget = total_budget - total_expenses
-        # Calculate Percentage for the progress bar (avoid division by zero)
-        budget_percent = (total_expenses / total_budget * 100) if total_budget > 0 else 0
+        for budget in all_budgets:
+            start_date = budget.created_at.date()
+            end_date = start_date + timedelta(days=budget.budget_period)
+            categories = budget.category.all()
+
+            budget_spent = Expense.objects.filter(
+                user=user,
+                category__in=categories,
+                date__gte=start_date,
+                date__lte=end_date
+            ).aggregate(Sum('amount'))['amount__sum'] or 0
+
+            calculated_total_budget += budget.amount
+            calculated_total_spent += budget_spent
+
+        remaining_budget = calculated_total_budget - calculated_total_spent
+        budget_percent = (calculated_total_spent / calculated_total_budget * 100) if calculated_total_budget > 0 else 0
 
         # C. Pending Reminders Count
         pending_reminders_count = Reminder.objects.filter(user=user).exclude(status=True).count()
@@ -315,12 +330,14 @@ class DashboardView(View):
 
         context = {
             'user': user,
-            'currency': user.currency,  # Access currency via Foreign Key
+            'currency': user.currency,
             'total_savings': total_savings,
-            'total_budget': total_budget,
-            'total_expenses': total_expenses,
+
+            'total_budget': calculated_total_budget,
+            'total_expenses': calculated_total_spent,
             'remaining_budget': remaining_budget,
-            'budget_percent': budget_percent,
+            'budget_percent': int(budget_percent),
+
             'pending_count': pending_reminders_count,
             'goals_data': goals_data,
             'recent_expenses': recent_expenses,
