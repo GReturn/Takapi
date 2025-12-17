@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from django.contrib import messages
+from django.db import connection
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -16,6 +20,9 @@ class ReminderIndexView(View):
         if not user_id:
             return redirect('user:login')
 
+        with connection.cursor() as cursor:
+            cursor.callproc("update_reminder_status", [user_id])
+
         user = User.objects.get(user_id=user_id)
         reminders = Reminder.objects.filter(user=user)
 
@@ -26,9 +33,91 @@ class ReminderIndexView(View):
 
 class CreateReminderView(View):
     def post(self, request):
-        # Logic to create reminder from POST data
-        # Combine date + time into datetime
-        # Save to DB
+        try:
+            message = request.POST['message']
+            description = request.POST['description']
+            date_time = datetime.strptime(f"{request.POST['date']} {request.POST['time']}", "%Y-%m-%d %H:%M")
+            user_id = request.session['user_id']
+            if not user_id:
+                return redirect('user:login')
+            p_out_message = ""
+            with connection.cursor() as cursor:
+                cursor.callproc("create_reminder", [user_id, message, date_time, description, p_out_message])
+                cursor.execute("SELECT @_create_reminder_4;")
+                message = cursor.fetchone()[0]
+            print(message)
+            if message == "Successfully created a new reminder":
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
+        except Exception as e:
+            messages.error(request, f'An error occured when creating the reminder: {e}')
+        
         return redirect('reminder:index')
 
-# ... Edit and Delete views similarly ...
+class DeleteReminderView(View):
+    def post(self, request, reminder_id):
+        try:
+            user_id = request.session["user_id"]
+            if not user_id:
+                return redirect('user:login')
+            p_out_message = ""
+            with connection.cursor() as cursor:
+                cursor.callproc("delete_reminder", [reminder_id, user_id, p_out_message])
+                cursor.execute("SELECT @_delete_reminder_2;")
+                message = cursor.fetchone()[0]
+            if message == "Successfully deleted":
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
+        except Exception as e:
+            messages.error(request, f'An error occurred when deleting the reminder: {e}')
+
+        return redirect('reminder:index')
+
+class EditReminderView(View):
+    def post(self, request, reminder_id):
+        try:
+            message = request.POST['message']
+            description = request.POST['description']
+            date_time = datetime.strptime(f"{request.POST['date']} {request.POST['time']}", "%Y-%m-%d %H:%M")
+            user_id = request.session["user_id"]
+            if not user_id:
+                return redirect('user:login')
+            p_out_msg = ""
+            with connection.cursor() as cursor:
+                cursor.callproc("update_reminder", [reminder_id, user_id, message, date_time, description, p_out_msg])
+                cursor.execute("SELECT @_update_reminder_5;")
+                message = cursor.fetchone()[0]
+            if message == "Successfully updated":
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
+        except Exception as e:
+            messages.error(request, f'An error occurred when deleting the reminder: {e}')
+        return redirect('reminder:index')
+
+class CompleteReminderView(View):
+    def post(self, request, reminder_id):
+        try:
+            user_id = request.session["user_id"]
+            if not user_id:
+                return redirect('user:login')
+            p_out_msg = ""
+            with connection.cursor() as cursor:
+                cursor.callproc("complete_reminder", [reminder_id, user_id, p_out_msg])
+                cursor.execute("SELECT @_complete_reminder_2;")
+                message = cursor.fetchone()[0]
+            if message == "Successfully marked as completed":
+                messages.success(request, message)
+            else:
+                messages.error(request, message)
+        except Exception as e:
+            messages.error(request, f'An error occurred when deleting the reminder: {e}')
+        return redirect('reminder:index')
+
+
+
+
+
+
