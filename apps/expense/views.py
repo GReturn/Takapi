@@ -106,11 +106,12 @@ class AddExpenseView(View):
 
         # Logic: If the user picked "Today", use the current time.
         # Otherwise, preserve the midnight time for past dates.
-        today_str = timezone.now().strftime('%Y-%m-%d')
+        now_local = timezone.localtime(timezone.now())
+        today_str = now_local.strftime('%Y-%m-%d')
 
         if expense_date == today_str:
             # It's today! Use exact current time
-            final_date = timezone.now()
+            final_date = now_local
         else:
             # It's a past/future date. Use the string (defaults to 00:00)
             final_date = expense_date
@@ -124,7 +125,7 @@ class AddExpenseView(View):
                 # Add Expense -> sp_add_expense
                 cursor.callproc('sp_add_expense', [amount, final_date, user_id, category_id, description])
                 messages.success(request, 'Expense added successfully!')
-        
+
         return redirect('expense:index')
 
 
