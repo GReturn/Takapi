@@ -1,4 +1,5 @@
-from django.db import connection
+from django.contrib import messages
+from django.db import connection, IntegrityError, DatabaseError
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -127,17 +128,33 @@ class BudgetView(View):
         budget_period = request.POST.get('budget_period_days')
         category_ids = request.POST.getlist('expense_categories')
 
-        with connection.cursor() as cursor:
-            cursor.callproc('add_budget', [name, amount, budget_period, user_id])
+        if Budget.objects.filter(user_id=user_id, name=name).exists():
+            messages.error(request, f"You already have a budget named '{name}'.")
+            return redirect('budget:index')
 
-        if category_ids:
-            # We need to find the budget we just created.
-            # We filter by user and name, and order by '-budget_id' to get the newest one.
-            new_budget = Budget.objects.filter(user_id=user_id, name=name).order_by('-budget_id').first()
+        try:
+            # 1. Try to Create Budget
+            with connection.cursor() as cursor:
+                cursor.callproc('add_budget', [name, amount, budget_period, user_id])
 
-            if new_budget:
-                # The star (*) unpacks the list of IDs into arguments
-                new_budget.category.add(*category_ids)
+            # 2. Try to Link Categories
+            if category_ids:
+                new_budget = Budget.objects.filter(user_id=user_id, name=name).order_by('-budget_id').first()
+                if new_budget:
+                    new_budget.category.add(*category_ids)
+
+            # If we get here, everything worked
+            messages.success(request, f"Budget '{name}' created successfully!")
+
+        except IntegrityError:
+            # This catches duplicates if your DB has UNIQUE constraints
+            messages.error(request, "A budget with this name might already exist.")
+        except DatabaseError as e:
+            # This catches generic DB errors (like Stored Procedure failures)
+            messages.error(request, "Database error: Could not save budget.")
+        except Exception as e:
+            # This catches Python errors
+            messages.error(request, f"Unexpected error: {str(e)}")
 
         return redirect('budget:index')
 
@@ -151,23 +168,22 @@ class EditBudgetView(View):
         name = request.POST.get('edit_name')
         amount = request.POST.get('edit_amount')
         period_days = request.POST.get('edit_period_days')
-
-        # 1. Capture the selected category IDs for editing
-        # Note: We use a different name 'edit_expense_categories' to distinguish from the create form
         category_ids = request.POST.getlist('edit_expense_categories')
 
-        # 2. Update main fields using Stored Procedure
-        with connection.cursor() as cursor:
-            cursor.callproc('edit_budget', [budget_id, name, amount, period_days, user_id])
-
-        # 3. Update Categories using Django ORM
-        # We fetch the budget object and use .set() which automatically handles
-        # clearing old categories and adding the new ones.
         try:
+            with connection.cursor() as cursor:
+                cursor.callproc('edit_budget', [budget_id, name, amount, period_days, user_id])
+
+            # Update Categories (Django ORM handles errors gracefully usually, but good to wrap)
             budget = Budget.objects.get(budget_id=budget_id)
             budget.category.set(category_ids)
+
+            messages.success(request, "Budget updated successfully!")
+
         except Budget.DoesNotExist:
-            pass
+            messages.error(request, "Budget not found.")
+        except Exception as e:
+            messages.error(request, f"Error updating budget: {str(e)}")
 
         return redirect('budget:index')
 
@@ -178,9 +194,6 @@ class DeleteBudgetHardView(View):
         if not user_id:
             return redirect('user:login')
 
-        # 1. CLEANUP: Remove the Category links first (Django ORM)
-        # This deletes the rows in the hidden "budget_budget_category" table
-        # so the Foreign Key constraint doesn't block the SP.
         try:
             budget = Budget.objects.get(budget_id=budget_id)
             budget.category.clear()  # Removes all M2M associations
@@ -188,7 +201,6 @@ class DeleteBudgetHardView(View):
             # If the budget doesn't exist, we can just proceed or return
             pass
 
-        # 2. DELETE: Remove the Budget record (Stored Procedure)
         with connection.cursor() as cursor:
             cursor.callproc('delete_budget', [budget_id, user_id])
 

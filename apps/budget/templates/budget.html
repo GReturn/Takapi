@@ -13,6 +13,29 @@
             {#            </button>#}
         </div>
     </header>
+    <!-- Alert Messages -->
+    {% if messages %}
+        <div id="alert-container" class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="alert-message flex items-center justify-between p-4 rounded-xl shadow-sm border-l-4
+            {% if message.tags == 'success' %}bg-green-50 border-green-500 text-green-800
+            {% elif message.tags == 'error' %}bg-red-50 border-red-500 text-red-800
+            {% else %}bg-blue-50 border-blue-500 text-blue-800{% endif %}">
+                    <div class="flex items-center space-x-3">
+                        <span class="font-medium text-sm">{{ message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600">×</button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            setTimeout(() => {
+                const alerts = document.querySelectorAll('.alert-message');
+                alerts.forEach(alert => alert.remove());
+            }, 5000); // Disappears after 5 seconds
+        </script>
+    {% endif %}
 
     <!-- Main Content -->
 
