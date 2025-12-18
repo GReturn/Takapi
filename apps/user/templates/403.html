@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Forbidden - Takapi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom Takapi Styles */
+        .bg-takapi-blue-dark { background-color: #0D47A1; }
+        .text-takapi-blue-dark { color: #0D47A1; }
+        .border-takapi-blue-dark { border-color: #0D47A1; }
+        .hover\:bg-takapi-blue-darker:hover { background-color: #0b3c8a; }
+        .bg-takapi-green { background-color: #4CAF50; }
+        .text-takapi-green { color: #4CAF50; }
+        .bg-takapi-blue-light { background-color: #2196F3; }
+        .text-takapi-blue-light { color: #2196F3; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center text-center px-6">
+
+    <div class="bg-white p-10 rounded-2xl shadow-xl max-w-lg w-full border border-gray-100">
+        <div class="h-16 w-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Access Forbidden (403)</h1>
+        <p class="text-gray-500 mb-6">
+            You don't have permission to view this page, or your session may have expired.
+        </p>
+
+        <div class="space-y-3">
+            <a href="{% url 'user:login' %}" class="block w-full bg-takapi-blue-dark text-white px-4 py-2 rounded-lg font-medium hover:bg-takapi-blue-darker transition shadow-sm">
+                Log In Again
+            </a>
+            <a href="/" class="block w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition">
+                Go to Home
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

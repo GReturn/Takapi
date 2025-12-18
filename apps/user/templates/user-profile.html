@@ -28,7 +28,7 @@
                     <span class="text-sm font-medium">Back to Dashboard</span>
                 </a>
                 <div class="h-6 w-px bg-gray-200"></div>
-                <a href="/" class="flex items-center space-x-2">
+                <a href="{% url 'user:index' %}" class="flex items-center space-x-2">
                     <img src="{% static 'images/takapi-logo-v2.svg' %}" alt="takapi logo" class="h-8 w-8">
                     <span class="text-xl font-bold text-takapi-blue-dark">Takapi</span>
                 </a>
@@ -73,6 +73,7 @@
                         <input type="hidden" name="action" value="update_info">
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                                 <input type="text" name="first_name" value="{{ user.first_name }}" required
@@ -83,15 +84,33 @@
                                 <input type="text" name="last_name" value="{{ user.last_name }}" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi focus:border-takapi outline-none transition">
                             </div>
+
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                                 <input type="email" name="email" value="{{ user.email }}" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi focus:border-takapi outline-none transition">
                             </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                                <input type="number" name="age" value="{{ user.age }}" min="18"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi outline-none transition">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                <select name="gender" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi outline-none bg-white transition">
+                                    <option value="Male" {% if user.gender == "Male" %}selected{% endif %}>Male</option>
+                                    <option value="Female" {% if user.gender == "Female" %}selected{% endif %}>Female</option>
+                                    <option value="Non-binary" {% if user.gender == "Non-binary" %}selected{% endif %}>Non-binary</option>
+                                    <option value="Not specified" {% if user.gender == "Not specified" %}selected{% endif %}>Not specified</option>
+                                    <option value="Prefer not to say" {% if user.gender == "Prefer not to say" %}selected{% endif %}>Prefer not to say</option>
+                                </select>
+                            </div>
+
                         </div>
                         <div class="mt-6 flex justify-end">
                             <button type="submit" class="bg-takapi-blue-dark text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-800 transition shadow-sm">
-                                Save Changes
+                                Save Personal Info
                             </button>
                         </div>
                     </form>
@@ -100,30 +119,18 @@
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
-                    <h2 class="text-lg font-bold text-gray-800">App Preferences</h2>
+                    <h2 class="text-lg font-bold text-gray-800">Regional Settings</h2>
                 </div>
                 <div class="p-6">
                     <form action="{% url 'user:profile' %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_preferences">
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                                <input type="number" name="age" value="{{ user.age }}"
-                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                                <select name="gender" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi outline-none bg-white">
-                                    <option value="Prefer not to say" {% if user.gender == "Prefer not to say" %}selected{% endif %}>Prefer not to say</option>
-                                    <option value="Male" {% if user.gender == "Male" %}selected{% endif %}>Male</option>
-                                    <option value="Female" {% if user.gender == "Female" %}selected{% endif %}>Female</option>
-                                    <option value="Non-binary" {% if user.gender == "Non-binary" %}selected{% endif %}>Non-binary</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Currency</label>
+                            <p class="text-sm text-gray-500 mb-3">Select the currency you want to use for tracking your expenses and savings.</p>
+
+                            <label>
                                 <select name="currency" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-takapi outline-none bg-white">
                                     {% for c in currencies %}
                                         <option value="{{ c.currency_id }}" {% if user.currency.currency_id == c.currency_id %}selected{% endif %}>
@@ -131,11 +138,12 @@
                                         </option>
                                     {% endfor %}
                                 </select>
-                            </div>
+                            </label>
                         </div>
+
                         <div class="mt-6 flex justify-end">
                             <button type="submit" class="bg-white text-gray-700 border border-gray-300 px-6 py-2 rounded-lg font-medium hover:bg-gray-50 transition shadow-sm">
-                                Update Preferences
+                                Update Currency
                             </button>
                         </div>
                     </form>
@@ -176,6 +184,22 @@
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                    <h2 class="text-lg font-bold text-gray-800">Legal & Compliance</h2>
+                </div>
+                <div class="p-6">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{% url 'user:privacy' %}" target="_blank" class="flex-1 text-center bg-white text-gray-700 border border-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition shadow-sm">
+                            Privacy Policy
+                        </a>
+                        <a href="{% url 'user:terms' %}" target="_blank" class="flex-1 text-center bg-white text-gray-700 border border-gray-300 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition shadow-sm">
+                            Terms of Service
+                        </a>
+                    </div>
                 </div>
             </div>
 
