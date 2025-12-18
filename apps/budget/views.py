@@ -54,20 +54,18 @@ class BudgetView(View):
                 categories = budget_obj.category.all()
 
                 # --- CALCULATION LOGIC ---
-                # 1. Get the start date (convert to date object to include all expenses from day 1)
-                start_date = budget_obj.created_at.date()
 
-                # 2. Calculate end date
+                start_date = budget_obj.created_at
+
                 end_date = start_date + timedelta(days=budget_obj.budget_period)
 
-                # 3. Sum expenses
                 spent = Expense.objects.filter(
                     user=user,
                     category__in=categories,
-                    date__gte=start_date,  # Now comparing Date vs Date (Safe!)
+                    date__gte=start_date,
                     date__lte=end_date
                 ).aggregate(Sum('amount'))['amount__sum'] or 0
-
+                print(f"Budget: {row[2]}, Start: {start_date}, Expense Sum: {spent}")
             except Budget.DoesNotExist:
                 categories = []
                 spent = 0

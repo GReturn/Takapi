@@ -1,5 +1,8 @@
 from django.db import models
+from django.utils import timezone
+
 from apps.user.models import User
+
 
 # Create your models here.
 class ExpenseCategory(models.Model):
@@ -9,11 +12,12 @@ class ExpenseCategory(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class Expense(models.Model):
     expense_id = models.AutoField(primary_key=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(ExpenseCategory, on_delete=models.RESTRICT)
@@ -22,4 +26,3 @@ class Expense(models.Model):
     # Example: 1200.00 - Food
     def __str__(self):
         return f"{self.amount} - {self.category.name}"
-

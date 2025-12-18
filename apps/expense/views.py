@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.contrib import messages
@@ -7,6 +8,7 @@ from apps.expense.models import Expense
 from apps.user.models import User
 from django.db import connection
 from datetime import date
+
 
 # Expense View -> 
 @method_decorator(never_cache, name='dispatch')
@@ -44,29 +46,29 @@ class ExpenseView(View):
             '#EF4444', '#3B82F6', '#10B981', '#F59E0B', '#6366F1', '#8B5CF6', '#EC4899', '#14B8A6',
             '#F97316', '#06B6D4', '#84CC16', '#A855F7', '#EF4444', '#0EA5E9', '#22C55E', '#F59E0B'
         ]
-        
+
         name_to_color = {}
         for cat in categories:
             color_index = cat['category_id'] % len(colors)
             cat['color'] = colors[color_index]
             cat['dot_attr'] = f'style="background-color: {cat["color"]}"'
             name_to_color[cat['category_name']] = cat['color']
-            
+
         for expense in user_expenses:
             if 'category_id' in expense:
-                 expense['color'] = colors[expense['category_id'] % len(colors)]
+                expense['color'] = colors[expense['category_id'] % len(colors)]
             elif 'category_name' in expense and expense['category_name'] in name_to_color:
-                 expense['color'] = name_to_color[expense['category_name']]
+                expense['color'] = name_to_color[expense['category_name']]
             else:
                 expense['color'] = '#9CA3AF'
-            
+
             # Format amount with commas
             if 'amount' in expense:
                 expense['amount_formatted'] = f"{expense['amount']:,.2f}"
 
             c = expense['color']
             expense['badge_attr'] = f'style="background-color: {c}15; color: {c}; border-color: {c}30;"'
-        
+
         monthly_summary = {}
         today = date.today()
         # Monthly Summary -> sp_monthly_summary
@@ -77,8 +79,8 @@ class ExpenseView(View):
             if result:
                 monthly_summary = dict(zip(columns, result))
                 if 'total_spent' in monthly_summary and monthly_summary['total_spent']:
-                     monthly_summary['total_spent'] = f"{monthly_summary['total_spent']:,.2f}"
-        
+                    monthly_summary['total_spent'] = f"{monthly_summary['total_spent']:,.2f}"
+
         monthly_summary['largest_expense'] = largest_expense_val
 
         context = {
@@ -96,20 +98,31 @@ class AddExpenseView(View):
     def post(self, request):
         user_id = request.session.get('user_id')
         expense_id = request.POST.get('expense_id')
-        
+
         amount = request.POST.get('amount')
         expense_date = request.POST.get('date')
         category_id = request.POST.get('category')
         description = request.POST.get('description')
 
+        # Logic: If the user picked "Today", use the current time.
+        # Otherwise, preserve the midnight time for past dates.
+        today_str = timezone.now().strftime('%Y-%m-%d')
+
+        if expense_date == today_str:
+            # It's today! Use exact current time
+            final_date = timezone.now()
+        else:
+            # It's a past/future date. Use the string (defaults to 00:00)
+            final_date = expense_date
+
         with connection.cursor() as cursor:
             if expense_id:
                 # Update Expense -> sp_update_expense
-                cursor.callproc('sp_update_expense', [expense_id, amount, expense_date, category_id, description])
+                cursor.callproc('sp_update_expense', [expense_id, amount, final_date, category_id, description])
                 messages.success(request, 'Expense updated successfully!')
             else:
                 # Add Expense -> sp_add_expense
-                cursor.callproc('sp_add_expense', [amount, expense_date, user_id, category_id, description])
+                cursor.callproc('sp_add_expense', [amount, final_date, user_id, category_id, description])
                 messages.success(request, 'Expense added successfully!')
         
         return redirect('expense:index')
@@ -123,7 +136,7 @@ class DeleteExpenseView(View):
         with connection.cursor() as cursor:
             # Delete Expense -> sp_delete_expense
             cursor.callproc('sp_delete_expense', [expense_id, user_id])
-        
+
         messages.success(request, 'Expense deleted successfully!')
         return redirect('expense:index')
 
@@ -135,7 +148,7 @@ class AddCategoryView(View):
         user_id = request.session.get('user_id')
         name = request.POST.get('name')
         category_id = request.POST.get('category_id')
-        
+
         with connection.cursor() as cursor:
             if category_id:
                 # Update Category -> sp_update_category
@@ -146,13 +159,11 @@ class AddCategoryView(View):
                 cursor.callproc('sp_add_category', [name, user_id])
                 result = cursor.fetchone()
                 if result and result[0] == -1:
-                     messages.error(request, f'Category "{name}" already exists.')
+                    messages.error(request, f'Category "{name}" already exists.')
                 else:
-                     messages.success(request, f'Category "{name}" created successfully!')
+                    messages.success(request, f'Category "{name}" created successfully!')
 
         return redirect('expense:index')
-
-
 
 
 # Delete Category -> sp_delete_category
@@ -165,13 +176,14 @@ class DeleteCategoryView(View):
                 # Delete Category -> sp_delete_category
                 cursor.callproc('sp_delete_category', [category_id, user_id])
                 result = cursor.fetchone()
-                
+
                 if result and result[0] == -1:
-                    messages.error(request, 'Cannot delete category: It still has expenses. Please delete or reassign them first.')
+                    messages.error(request,
+                                   'Cannot delete category: It still has expenses. Please delete or reassign them first.')
                 else:
                     messages.success(request, 'Category deleted successfully!')
-                    
+
         except Exception as e:
             messages.error(request, 'Cannot delete category: It still has expenses linked to it.')
-            
+
         return redirect('expense:index')
