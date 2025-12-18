@@ -216,7 +216,11 @@ class ProfileView(TemplateView):
                         request.POST.get('age'),
                         request.POST.get('gender')
                     ])
-                    messages.success(request, 'Info updated successfully.')
+                    result = cursor.fetchall()
+                    if result and result[0][0] == 'Email is already taken.':
+                        messages.error(request, 'Email is already taken.')
+                    else:
+                        messages.success(request, 'Info updated successfully.')
 
                 elif action == 'update_preferences':
                     currency_id = request.POST.get('currency')
@@ -227,7 +231,11 @@ class ProfileView(TemplateView):
                             user_id,
                             currency_id
                         ])
-                        messages.success(request, 'Preferences updated successfully.')
+                        result = cursor.fetchall()
+                        if result and result[0][0] == 'Invalid currency selected.':
+                            messages.error(request, 'Invalid currency selected.')
+                        else:
+                            messages.success(request, 'Preferences updated successfully.')
 
                 elif action == 'change_password':
                     current_password = request.POST.get('current_password')
