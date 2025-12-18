@@ -26,13 +26,6 @@ class ExpenseView(View):
             columns = [col[0] for col in cursor.description]
             user_expenses = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-        largest_expense_val = 0
-
-        # Get Largest Expense
-        if user_expenses:
-            largest_expense_val = max([e['amount'] for e in user_expenses])
-            largest_expense_val = f"{largest_expense_val:,.2f}"
-
         # Get Expenses By Category -> sp_expenses_by_category
         categories = []
         with connection.cursor() as cursor:
@@ -78,8 +71,8 @@ class ExpenseView(View):
                 monthly_summary = dict(zip(columns, result))
                 if 'total_spent' in monthly_summary and monthly_summary['total_spent']:
                      monthly_summary['total_spent'] = f"{monthly_summary['total_spent']:,.2f}"
-        
-        monthly_summary['largest_expense'] = largest_expense_val
+                if 'largest_expense' in monthly_summary and monthly_summary['largest_expense']:
+                     monthly_summary['largest_expense'] = f"{monthly_summary['largest_expense']:,.2f}"
 
         context = {
             'expenses': user_expenses,
@@ -111,7 +104,10 @@ class AddExpenseView(View):
                 # Add Expense -> sp_add_expense
                 cursor.callproc('sp_add_expense', [amount, expense_date, user_id, category_id, description])
                 messages.success(request, 'Expense added successfully!')
-        
+            
+            # Ensure transaction is committed
+            # cursor.execute("COMMIT") # Django handles this, but explicit check doesn't hurt if issues arise
+
         return redirect('expense:index')
 
 
@@ -123,6 +119,8 @@ class DeleteExpenseView(View):
         with connection.cursor() as cursor:
             # Delete Expense -> sp_delete_expense
             cursor.callproc('sp_delete_expense', [expense_id, user_id])
+            # Ensure transaction is committed
+            # cursor.execute("COMMIT")
         
         messages.success(request, 'Expense deleted successfully!')
         return redirect('expense:index')
@@ -149,6 +147,9 @@ class AddCategoryView(View):
                      messages.error(request, f'Category "{name}" already exists.')
                 else:
                      messages.success(request, f'Category "{name}" created successfully!')
+            
+            # Ensure transaction is committed
+            # cursor.execute("COMMIT")
 
         return redirect('expense:index')
 
@@ -170,6 +171,9 @@ class DeleteCategoryView(View):
                     messages.error(request, 'Cannot delete category: It still has expenses. Please delete or reassign them first.')
                 else:
                     messages.success(request, 'Category deleted successfully!')
+                
+                # Ensure transaction is committed
+                # cursor.execute("COMMIT")
                     
         except Exception as e:
             messages.error(request, 'Cannot delete category: It still has expenses linked to it.')
