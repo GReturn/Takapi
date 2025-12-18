@@ -27,6 +27,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+CSRF_FAILURE_VIEW = 'Takapi.urls.custom_csrf_failure_view'
+
+
 # Application definition
 
 INSTALLED_APPS = [

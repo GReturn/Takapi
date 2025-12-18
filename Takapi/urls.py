@@ -37,6 +37,10 @@ def custom_permission_denied_view(request, exception):
 def custom_server_error_view(request):
     return render(request, "500.html", status=500)
 
+def custom_csrf_failure_view(request, reason=''):
+    context = {'message': reason}
+    return render(request, "403.html", status=403)
+
 handler404 = 'Takapi.urls.custom_page_not_found_view'
 handler403 = 'Takapi.urls.custom_permission_denied_view'
 handler500 = 'Takapi.urls.custom_server_error_view'
