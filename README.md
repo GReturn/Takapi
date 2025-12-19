@@ -104,9 +104,6 @@ Takapi/
 
 ---
 ## 📐 Entity-Relationship Diagram
-![Takapi ERD](readme/Takapi-ERD.png)
-
-### Interactive ERD
 ```mermaid
 erDiagram
     USER {
