@@ -232,3 +232,4 @@ python manage.py test
 3. Open a Pull Request
 
 ---
+In compliance with CSIT327 - Information Management 2 S.Y. 2025-2026 1st Semester.
