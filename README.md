@@ -6,6 +6,18 @@ Takapi is a savings app designed to help users manage their money with ease. Its
 
 This is a Django-based web application. This README provides setup instructions for contributors.
 
+![readme/takapi-ss-dashboard.png](readme/takapi-ss-dashboard.png)
+
+## Features
+### 💸Create budgets
+![readme/takapi-ss-budget.png](readme/takapi-ss-budget.png)
+### 🎯Make saving goals
+![readme/takapi-ss-savinggoals.png](readme/takapi-ss-savinggoals.png)
+### 📝Track expenses
+![readme/takapi-ss-expense.png](readme/takapi-ss-expense.png)
+### 🔔Set reminders
+![readme/takapi-ss-reminders.png](readme/takapi-ss-reminders.png)
+
 ---
 
 ## 📦 Requirements
